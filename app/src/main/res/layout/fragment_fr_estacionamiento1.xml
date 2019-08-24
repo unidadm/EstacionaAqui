@@ -79,12 +79,12 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Ingrese Teléfono"
-        android:inputType="textPersonName"
-        android:text="" />
+        android:inputType="phone" />
 
     <Button
         android:id="@+id/buttonNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Siguiente >" />
+        android:text="Siguiente >"/>
+
 </LinearLayout>

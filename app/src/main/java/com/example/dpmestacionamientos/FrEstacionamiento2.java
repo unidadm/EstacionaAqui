@@ -1,30 +1,27 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FrEstacionamiento1.OnFragmentInteractionListener} interface
+ * {@link FrEstacionamiento2.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FrEstacionamiento1#newInstance} factory method to
+ * Use the {@link FrEstacionamiento2#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FrEstacionamiento1 extends Fragment {
+public class FrEstacionamiento2 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,7 +33,7 @@ public class FrEstacionamiento1 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FrEstacionamiento1() {
+    public FrEstacionamiento2() {
         // Required empty public constructor
     }
 
@@ -46,11 +43,11 @@ public class FrEstacionamiento1 extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FrEstacionamiento1.
+     * @return A new instance of fragment FrEstacionamiento2.
      */
     // TODO: Rename and change types and number of parameters
-    public static FrEstacionamiento1 newInstance(String param1, String param2) {
-        FrEstacionamiento1 fragment = new FrEstacionamiento1();
+    public static FrEstacionamiento2 newInstance(String param1, String param2) {
+        FrEstacionamiento2 fragment = new FrEstacionamiento2();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -70,20 +67,17 @@ public class FrEstacionamiento1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_fr_estacionamiento1, container, false);
 
-        Button button = (Button) view.findViewById(R.id.buttonNext);
-        button.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                // do something
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
-            }
-        });
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_fr_estacionamiento2, container, false);
+
+        final String[] tipos = new String[] {"Exterior", "Interior", "Aire Libre" };
+
+        ArrayAdapter<String> adaptador = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
+        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        Spinner combo = (Spinner) view.findViewById(R.id.spinnerTipo);
+        combo.setAdapter(adaptador);
 
         return view;
     }
@@ -126,5 +120,4 @@ public class FrEstacionamiento1 extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
 }

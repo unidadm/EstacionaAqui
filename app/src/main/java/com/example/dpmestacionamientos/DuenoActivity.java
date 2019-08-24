@@ -25,7 +25,9 @@ import android.view.Menu;
 
 public class DuenoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        FrEstacionamiento1.OnFragmentInteractionListener{
+        FrEstacionamiento1.OnFragmentInteractionListener,
+        FrEstacionamiento2.OnFragmentInteractionListener,
+        FrBusqueda.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +97,8 @@ public class DuenoActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.nav_new_estacionamiento) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+        } else if (id == R.id.nav_busqueda) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).commit();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
