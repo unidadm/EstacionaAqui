@@ -28,6 +28,7 @@ import com.example.dpmestacionamientos.CreaActivity;
 import com.example.dpmestacionamientos.R;
 import com.example.dpmestacionamientos.ui.login.LoginViewModel;
 import com.example.dpmestacionamientos.ui.login.LoginViewModelFactory;
+import com.example.dpmestacionamientos.DuenoActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -40,8 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(new Intent(this, CreaActivity.class));
     }
     public void Dueño_vista(View view){
-        //Daniel
-
+        startActivity(new Intent(this, DuenoActivity.class));
     }
 
     public void Cliente_vista(View view){

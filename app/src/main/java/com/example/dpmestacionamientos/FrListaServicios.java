@@ -6,24 +6,29 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FrBusqueda.OnFragmentInteractionListener} interface
+ * {@link FrListaServicios.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FrBusqueda#newInstance} factory method to
+ * Use the {@link FrListaServicios#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FrBusqueda extends Fragment {
+public class FrListaServicios extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,7 +40,11 @@ public class FrBusqueda extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FrBusqueda() {
+    private List<Servicio> servicioList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private ServiciosAdapter mAdapter;
+
+    public FrListaServicios() {
         // Required empty public constructor
     }
 
@@ -45,11 +54,11 @@ public class FrBusqueda extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FrBusqueda.
+     * @return A new instance of fragment FrListaServicios.
      */
     // TODO: Rename and change types and number of parameters
-    public static FrBusqueda newInstance(String param1, String param2) {
-        FrBusqueda fragment = new FrBusqueda();
+    public static FrListaServicios newInstance(String param1, String param2) {
+        FrListaServicios fragment = new FrListaServicios();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -70,32 +79,23 @@ public class FrBusqueda extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_fr_busqueda, container, false);
+        View view =  inflater.inflate(R.layout.fragment_fr_lista_servicios, container, false);
 
-        final String[] tipos = new String[] {"Exterior", "Interior", "Aire Libre" };
-        final String[] distritos = new String[] {"Barranco", "San Miguel", "Surco" };
-        final String[] ubicaciones = new String[] {"Primer Piso", "Azotea", "Sótano" };
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
-        ArrayAdapter<String> adaptadorTipos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
-        adaptadorTipos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mAdapter = new ServiciosAdapter(servicioList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        ArrayAdapter<String> adaptadorDistritos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, distritos);
-        adaptadorDistritos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
-        ArrayAdapter<String> adaptadorUbicaciones = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, ubicaciones);
-        adaptadorUbicaciones.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recyclerView.setAdapter(mAdapter);
 
-        Spinner comboTipos = (Spinner) view.findViewById(R.id.spinnerTipo);
-        comboTipos.setAdapter(adaptadorTipos);
+        prepareServicioData();
 
-        Spinner comboDistritos = (Spinner) view.findViewById(R.id.spinnerDistrito);
-        comboDistritos.setAdapter(adaptadorDistritos);
-
-        Spinner comboUbicaciones = (Spinner) view.findViewById(R.id.spinnerUbicacion);
-        comboUbicaciones.setAdapter(adaptadorUbicaciones);
-
-        //Botón Buscar
-        Button button = (Button) view.findViewById(R.id.buttonBuscar);
+        //Botón Nuevo
+        Button button = (Button) view.findViewById(R.id.buttonNew);
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -103,11 +103,24 @@ public class FrBusqueda extends Fragment {
             {
                 // do something
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrServicio()).commit();
             }
         });
 
         return view;
+    }
+
+    private void prepareServicioData() {
+        Servicio servicio = new Servicio("Lavado de Vehículo", "- Con agua a presión...");
+        servicioList.add(servicio);
+
+        servicio = new Servicio("Revisión de llantas", "Inflado");
+        servicioList.add(servicio);
+
+        servicio = new Servicio("Encerado", "Con productos Sonax...");
+        servicioList.add(servicio);
+
+        mAdapter.notifyDataSetChanged();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

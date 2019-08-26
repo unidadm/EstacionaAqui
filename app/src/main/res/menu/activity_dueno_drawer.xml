@@ -13,21 +13,13 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Editar Estacionamiento" />
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_servicios"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:title="Servicios Adicionales" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <item
-            android:id="@+id/nav_tools"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/menu_tools" />
+            android:id="@+id/nav_llamar"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Llamar" />
     </group>
 
     <item android:title="Communicate">
