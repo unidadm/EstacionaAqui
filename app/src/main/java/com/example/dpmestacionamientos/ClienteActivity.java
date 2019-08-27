@@ -1,6 +1,7 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -19,11 +20,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
 import android.view.Menu;
 
 public class ClienteActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        FrBusquedaAlquileres.OnFragmentInteractionListener,FrEditar_Perfil.OnFragmentInteractionListener
+{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +89,11 @@ public class ClienteActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        FragmentManager fragmentManager = getSupportFragmentManager();
         if (id == R.id.editar_perfil) {
             startActivity(new Intent(this, Edit_Profile_Activity.class));
         } else if (id == R.id.Buscar_Estacionamiento) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
 
         } else if (id == R.id.Lst_Estacionamiento) {
 
@@ -101,5 +106,9 @@ public class ClienteActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
