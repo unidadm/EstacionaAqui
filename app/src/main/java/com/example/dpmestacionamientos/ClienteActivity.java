@@ -26,8 +26,12 @@ import android.view.Menu;
 
 public class ClienteActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        FrBusquedaAlquileres.OnFragmentInteractionListener,FrEditar_Perfil.OnFragmentInteractionListener
-{
+        FrBusquedaAlquileres.OnFragmentInteractionListener,FrEditar_Perfil.OnFragmentInteractionListener,
+            FrListaEstacionamientos.OnFragmentInteractionListener,
+        FrLlamarDueno.OnFragmentInteractionListener,
+        FrListaAlquileres.OnFragmentInteractionListener
+
+        {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class ClienteActivity extends AppCompatActivity
         setContentView(R.layout.activity_cliente);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,14 +94,19 @@ public class ClienteActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (id == R.id.editar_perfil) {
-            startActivity(new Intent(this, Edit_Profile_Activity.class));
-        } else if (id == R.id.Buscar_Estacionamiento) {
+
+        if (id == R.id.nav_home) {
+            // Handle the camera action
+        } else if (id == R.id.editar_perfil) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
-
+        } else if (id == R.id.Buscar_Estacionamiento) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).commit();
         } else if (id == R.id.Lst_Estacionamiento) {
-
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaAlquileres()).commit();
+        } else if (id == R.id.LammarDueno) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -107,6 +117,7 @@ public class ClienteActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     public void onFragmentInteraction(Uri uri) {
 
