@@ -31,7 +31,9 @@ public class DuenoActivity extends AppCompatActivity
         FrListaEstacionamientos.OnFragmentInteractionListener,
         FrListaServicios.OnFragmentInteractionListener,
         FrServicio.OnFragmentInteractionListener,
-        FrLlamarDueno.OnFragmentInteractionListener{
+        FrLlamarDueno.OnFragmentInteractionListener,
+        FrBusquedaAlquileres.OnFragmentInteractionListener,
+        FrListaAlquileres.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,10 +107,10 @@ public class DuenoActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).commit();
         } else if (id == R.id.nav_servicios) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaServicios()).commit();
+        } else if (id == R.id.nav_alquileres) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).commit();
         } else if (id == R.id.nav_llamar) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
-        } else if (id == R.id.nav_tools) {
-
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

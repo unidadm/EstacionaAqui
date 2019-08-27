@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Servicios Adicionales" />
         <item
+            android:id="@+id/nav_alquileres"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Lista de Alquileres" />
+        <item
             android:id="@+id/nav_llamar"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Llamar" />

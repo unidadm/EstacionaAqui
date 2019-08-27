@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".FrBusquedaAlquileres">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/textViewDesde"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Desde" />
+
+    <EditText
+        android:id="@+id/editTextDesde"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date" />
+
+    <TextView
+        android:id="@+id/textViewHasta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Desde" />
+
+    <EditText
+        android:id="@+id/editTextHasta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date" />
+
+    <TextView
+        android:id="@+id/textViewDistrito"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Distrito" />
+
+    <Spinner
+        android:id="@+id/spinnerDistrito"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        />
+
+    <TextView
+        android:id="@+id/textViewEstacionamiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estacionamiento" />
+
+    <Spinner
+        android:id="@+id/spinnerEstacionamiento"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        />
+
+    <Button
+        android:id="@+id/buttonBuscar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Buscar"/>
+
+</LinearLayout>
