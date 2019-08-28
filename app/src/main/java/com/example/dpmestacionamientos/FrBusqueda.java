@@ -36,7 +36,7 @@ public class FrBusqueda extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     public FrBusqueda() {
-        // Required empty public constructor
+        // Required empty public constructorffff
     }
 
     /**
