@@ -15,6 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import android.content.SharedPreferences;
+import android.view.Gravity;
+import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -73,13 +77,15 @@ public class FrEstacionamiento1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_estacionamiento1, container, false);
 
+        // Boton Grabar
         Button button = (Button) view.findViewById(R.id.buttonNext);
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                // do something
+                grabar(v);
+
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
             }
@@ -127,4 +133,25 @@ public class FrEstacionamiento1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    public void grabar(View v){
+        // Se capturan los controles de cajas de texto
+        EditText editTextName = (EditText) getView().findViewById(R.id.editTextName);
+        EditText editTextAddress = (EditText) getView().findViewById(R.id.editTextAddress);
+        EditText editTextMaps = (EditText) getView().findViewById(R.id.editTextMaps);
+        EditText editTextDist = (EditText) getView().findViewById(R.id.editTextDist);
+        EditText editTextPhone = (EditText) getView().findViewById(R.id.editTextPhone);
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("NAME", editTextName.getText().toString());
+        editor.putString("ADDRESS", editTextAddress.getText().toString());
+        editor.putString("MAPS", editTextMaps.getText().toString());
+        editor.putString("DIST", editTextDist.getText().toString());
+        editor.putString("PHONE", editTextPhone.getText().toString());
+        editor.commit();
+        Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+
+    }
 }
