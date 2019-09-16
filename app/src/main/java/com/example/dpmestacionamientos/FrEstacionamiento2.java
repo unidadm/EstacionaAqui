@@ -16,26 +16,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import android.content.SharedPreferences;
-
-import android.util.Log;
-import android.view.Gravity;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.dpmestacionamientos.data.model.ModelEstacionamiento;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,6 +44,12 @@ public class FrEstacionamiento2 extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    EditText editTextPrecio, editTextLargo, editTextAncho;
+    Spinner spinnerTipo;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     public FrEstacionamiento2() {
         // Required empty public constructor
@@ -95,13 +89,26 @@ public class FrEstacionamiento2 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_estacionamiento2, container, false);
 
+        // Se capturan los controles de cajas de texto
+        editTextPrecio = view.findViewById(R.id.editTextPrecio);
+        editTextLargo = view.findViewById(R.id.editTextLargo);
+        editTextAncho = view.findViewById(R.id.editTextAncho);
+        spinnerTipo = view.findViewById(R.id.spinnerTipo);
+
+        editTextPrecio.setText("0.00");
+        editTextLargo.setText("0.00");
+        editTextAncho.setText("0.00");
+
+        // Llenado del combo de Tipo
         final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
 
         ArrayAdapter<String> adaptador = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
         adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        Spinner combo = (Spinner) view.findViewById(R.id.spinnerTipo);
-        combo.setAdapter(adaptador);
+        spinnerTipo.setAdapter(adaptador);
+
+        // Se inicializa Firebase
+        inicializarFirebase();
 
         // Boton Grabar
         Button button = (Button) view.findViewById(R.id.buttonSave);
@@ -110,10 +117,11 @@ public class FrEstacionamiento2 extends Fragment {
             @Override
             public void onClick(View v)
             {
-                grabar(v);
-
-                //FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                //fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
+                if(grabar(v))
+                {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+                }
             }
         });
 
@@ -159,13 +167,17 @@ public class FrEstacionamiento2 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void grabar(View v){
-        // Se capturan los controles de cajas de texto
-        EditText editTextPrecio = (EditText) getView().findViewById(R.id.editTextPrecio);
-        EditText editTextLargo = (EditText) getView().findViewById(R.id.editTextLargo);
-        EditText editTextAncho = (EditText) getView().findViewById(R.id.editTextAncho);
-        Spinner spinnerTipo = (Spinner) getView().findViewById(R.id.spinnerTipo);
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
 
+    public Boolean grabar(View v){
+        if(!validacion())
+        {
+            return false;
+        }
         // Se capturan los valores del SharedPreferences
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
         String ls_name = prefs.getString("NAME", "");
@@ -174,50 +186,63 @@ public class FrEstacionamiento2 extends Fragment {
         String ls_dist = prefs.getString("DIST", "");
         String ls_phone = prefs.getString("PHONE", "");
 
+        Double ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
+        Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
+        Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
         String ls_tipo = spinnerTipo.getSelectedItem().toString();
 
-        OkHttpClient client = new OkHttpClient();
+        ModelEstacionamiento p = new ModelEstacionamiento();
+        p.setId(UUID.randomUUID().toString());
+        p.setNombre(ls_name);
+        p.setDireccion(ls_address);
+        p.setDirecciongooglemaps(ls_maps);
+        p.setDistrito(ls_dist);
+        p.setTelefono(ls_phone);
+        p.setPreciohora(ldbl_precio);
+        p.setLargo(ldbl_largo);
+        p.setAncho(ldbl_ancho);
+        p.setTipo(ls_tipo);
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("idCategoria", "1")
-                .addFormDataPart("nombre", ls_name)
-                .addFormDataPart("precio", editTextPrecio.getText().toString())
-                .build();
+        databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
+        Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
 
-        Request request = new Request.Builder().url("http://condeleron.atwebpages.com/index.php/productos")
-                .post(requestBody)
-                .build();
+        return true;
+    }
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+    private Boolean validacion() {
+        Boolean lb_error = false;
+        String ls_precio = editTextPrecio.getText().toString();
+        String ls_largo = editTextLargo.getText().toString();
+        String ls_ancho = editTextAncho.getText().toString();
+        String ls_tipo = spinnerTipo.getSelectedItem().toString();
 
-            @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                } else {
-                    String cadenaJson = response.body().string();
-                    Log.i("====>", cadenaJson);
+        Double ldbl_precio = 0.0;
 
-                    getActivity().runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Se insertó correctamente", Toast.LENGTH_SHORT);
-                            toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
-                            toast.show();
-                        }
-                    });
+        if(ls_precio.equals(""))
+        {
+            editTextPrecio.setError("Requerido");
+            lb_error = true;
+        }
+        else {
+            ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
+        }
+        if(ldbl_precio <= 0.0){
+            editTextPrecio.setError("Requerido");
+            lb_error = true;
+        }
 
-                }
-            }
-        });
+        if(ls_largo.equals(""))
+        {
+            editTextLargo.setError("Requerido");
+            lb_error = true;
+        }
 
-        editTextPrecio.setText("");
-        editTextLargo.setText("");
-        editTextAncho.setText("");
-        spinnerTipo.setSelection(0);
+        if(ls_ancho.equals(""))
+        {
+            editTextAncho.setError("Requerido");
+            lb_error = true;
+        }
+
+        return !lb_error;
     }
 }

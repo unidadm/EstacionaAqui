@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "19523267427",
+    "firebase_url": "https://appestacionamiento-eb1b6.firebaseio.com",
+    "project_id": "appestacionamiento-eb1b6",
+    "storage_bucket": "appestacionamiento-eb1b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19523267427:android:fb5f478b4d1142bb0f4156",
+        "android_client_info": {
+          "package_name": "com.example.dpmestacionamientos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "19523267427-7v32959d8h3f8lsvk91jarsbtufaqtau.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dpmestacionamientos",
+            "certificate_hash": "ecb73898db94387f2ff63ba340dafa1b1e3a7a91"
+          }
+        },
+        {
+          "client_id": "19523267427-p2kvgk2407o52rvk7qtkij7nko0e8uaa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABd5ISTZcqrz5w9p0-Zvf23pBpXEfoR6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "19523267427-p2kvgk2407o52rvk7qtkij7nko0e8uaa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

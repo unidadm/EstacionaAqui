@@ -40,6 +40,8 @@ public class FrEstacionamiento1 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    EditText editTextName, editTextAddress, editTextMaps, editTextDist, editTextPhone;
+
     public FrEstacionamiento1() {
         // Required empty public constructor
     }
@@ -77,6 +79,13 @@ public class FrEstacionamiento1 extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_estacionamiento1, container, false);
 
+        // Se capturan los controles de cajas de texto
+        editTextName = view.findViewById(R.id.editTextName);
+        editTextAddress = view.findViewById(R.id.editTextAddress);
+        editTextMaps = view.findViewById(R.id.editTextMaps);
+        editTextDist = view.findViewById(R.id.editTextDist);
+        editTextPhone = view.findViewById(R.id.editTextPhone);
+
         // Boton Grabar
         Button button = (Button) view.findViewById(R.id.buttonNext);
         button.setOnClickListener(new View.OnClickListener()
@@ -84,10 +93,11 @@ public class FrEstacionamiento1 extends Fragment {
             @Override
             public void onClick(View v)
             {
-                grabar(v);
-
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
+                if(grabar(v))
+                {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
+                }
             }
         });
 
@@ -133,25 +143,66 @@ public class FrEstacionamiento1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void grabar(View v){
+    public Boolean grabar(View v){
         // Se capturan los controles de cajas de texto
-        EditText editTextName = (EditText) getView().findViewById(R.id.editTextName);
-        EditText editTextAddress = (EditText) getView().findViewById(R.id.editTextAddress);
-        EditText editTextMaps = (EditText) getView().findViewById(R.id.editTextMaps);
-        EditText editTextDist = (EditText) getView().findViewById(R.id.editTextDist);
-        EditText editTextPhone = (EditText) getView().findViewById(R.id.editTextPhone);
+        // EditText editTextName = (EditText) getView().findViewById(R.id.editTextName);
+        if(!validacion())
+        {
+            return false;
+        }
+
+        String ls_name = editTextName.getText().toString();
+        String ls_address = editTextAddress.getText().toString();
+        String ls_maps = editTextMaps.getText().toString();
+        String ls_dist = editTextDist.getText().toString();
+        String ls_phone = editTextPhone.getText().toString();
 
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("NAME", editTextName.getText().toString());
-        editor.putString("ADDRESS", editTextAddress.getText().toString());
-        editor.putString("MAPS", editTextMaps.getText().toString());
-        editor.putString("DIST", editTextDist.getText().toString());
-        editor.putString("PHONE", editTextPhone.getText().toString());
+        editor.putString("NAME", ls_name);
+        editor.putString("ADDRESS", ls_address);
+        editor.putString("MAPS", ls_maps);
+        editor.putString("DIST", ls_dist);
+        editor.putString("PHONE", ls_phone);
         editor.commit();
         Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();
 
+        return true;
+    }
+
+    private Boolean validacion() {
+        Boolean lb_error = false;
+        String ls_name = editTextName.getText().toString();
+        String ls_address = editTextAddress.getText().toString();
+        String ls_dist = editTextDist.getText().toString();
+        String ls_phone = editTextPhone.getText().toString();
+
+        if(ls_name.equals(""))
+        {
+            editTextName.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_address.equals(""))
+        {
+            editTextAddress.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_dist.equals(""))
+        {
+            editTextDist.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_phone.equals(""))
+        {
+            editTextPhone.setError("Requerido");
+            lb_error = true;
+        }
+
+        return !lb_error;
     }
 }

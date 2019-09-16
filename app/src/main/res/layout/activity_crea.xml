@@ -20,7 +20,18 @@
         android:ems="10"
         android:hint="Ingrese su Nombre"
         android:inputType="textPersonName" />
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:text="Ingrese apellido" />
 
+    <EditText
+        android:id="@+id/etapellido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Ingrese su apellido"/>
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
@@ -49,19 +60,7 @@
         android:inputType="textPassword"
         android:hint="Ingrese su contraseña"/>
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
-        android:text="Confirmar Contraseña" />
 
-    <EditText
-        android:id="@+id/etConfContraseña"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:hint="Ingrese su contraseña"/>
 
     <RadioButton
         android:id="@+id/rbDueño"
@@ -79,5 +78,7 @@
         android:id="@+id/btnCrear"
         android:layout_width="match_parent"
         android:layout_height="76dp"
+        android:onClick="Crear_New"
         android:text="Crear Cuenta" />
 </LinearLayout>
+
