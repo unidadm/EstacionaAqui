@@ -1,10 +1,13 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +52,9 @@ public class FrListaEstacionamientos extends Fragment {
     private List<Estacionamiento> estacionamientoList = new ArrayList<>();
     private RecyclerView recyclerView;
     private EstacionamientosAdapter mAdapter;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     public FrListaEstacionamientos() {
         // Required empty public constructor
@@ -79,6 +93,7 @@ public class FrListaEstacionamientos extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_lista_estacionamientos, container, false);
 
+        //LLenado del RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         mAdapter = new EstacionamientosAdapter(estacionamientoList);
@@ -88,15 +103,65 @@ public class FrListaEstacionamientos extends Fragment {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
+        //Evento click del RecyclerView
+        mAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("ACCION", "M");
+                editor.putString("ID", estacionamientoList.get(recyclerView.getChildAdapterPosition(view)).getId());
+                editor.commit();
+
+                Toast.makeText(getActivity(), "Selección:" + estacionamientoList.get(recyclerView.getChildAdapterPosition(view)).getNombre(), Toast.LENGTH_LONG).show();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+            }
+        });
+
         recyclerView.setAdapter(mAdapter);
 
-        prepareEstacionamientoData();
+        // Se inicializa Firebase
+        inicializarFirebase();
+
+        listarDatos();
+        //prepareEstacionamientoData();
 
         return view;
     }
 
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
+
+    private void listarDatos(){
+        databaseReference.child("estacionamiento").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                estacionamientoList.clear();
+                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                    Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
+                    estacionamientoList.add(p);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void prepareEstacionamientoData() {
-        Estacionamiento estacionamiento = new Estacionamiento("Estacionamiento Don Pedrito", "San Miguel", "2.50");
+        /*
+        Estacionamiento estacionamiento = new Estacionamiento();
+        estacionamiento.setNombre("Estacionamiento Don Pedrito");
+        estacionamiento.setDistrito("San Miguel");
+        estacionamiento.setPreciohora(2.50);
         estacionamientoList.add(estacionamiento);
 
         estacionamiento = new Estacionamiento("Los Portalitos", "Miraflores", "4.00");
@@ -151,7 +216,7 @@ public class FrListaEstacionamientos extends Fragment {
         estacionamientoList.add(estacionamiento);
 
         estacionamiento = new Estacionamiento("Estac. Los Suspiros", "Barranco", "3.00");
-        estacionamientoList.add(estacionamiento);
+        estacionamientoList.add(estacionamiento);*/
 
         mAdapter.notifyDataSetChanged();
     }

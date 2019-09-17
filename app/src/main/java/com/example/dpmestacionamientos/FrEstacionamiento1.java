@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -19,6 +20,13 @@ import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +49,11 @@ public class FrEstacionamiento1 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     EditText editTextName, editTextAddress, editTextMaps, editTextDist, editTextPhone;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+
+    String is_accion;
 
     public FrEstacionamiento1() {
         // Required empty public constructor
@@ -86,6 +99,18 @@ public class FrEstacionamiento1 extends Fragment {
         editTextDist = view.findViewById(R.id.editTextDist);
         editTextPhone = view.findViewById(R.id.editTextPhone);
 
+        // Se inicializa Firebase
+        inicializarFirebase();
+
+        // Se leen los parámetros
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        is_accion = prefs.getString("ACCION", "");
+
+        if(is_accion.equals("M"))
+        {
+            cargarDatos();
+        }
+
         // Boton Grabar
         Button button = (Button) view.findViewById(R.id.buttonNext);
         button.setOnClickListener(new View.OnClickListener()
@@ -102,6 +127,101 @@ public class FrEstacionamiento1 extends Fragment {
         });
 
         return view;
+    }
+
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
+
+    private void cargarDatos(){
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        String ls_id = prefs.getString("ID", "");
+
+        databaseReference.child("estacionamiento").orderByChild("id").equalTo(ls_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                    Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
+
+                    editTextName.setText(p.getNombre());
+                    editTextAddress.setText(p.getDireccion());
+                    editTextMaps.setText(p.getDirecciongooglemaps());
+                    editTextDist.setText(p.getDistrito());
+                    editTextPhone.setText(p.getTelefono());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public Boolean grabar(View v){
+        // Se capturan los controles de cajas de texto
+        // EditText editTextName = (EditText) getView().findViewById(R.id.editTextName);
+        if(!validar())
+        {
+            return false;
+        }
+
+        String ls_name = editTextName.getText().toString();
+        String ls_address = editTextAddress.getText().toString();
+        String ls_maps = editTextMaps.getText().toString();
+        String ls_dist = editTextDist.getText().toString();
+        String ls_phone = editTextPhone.getText().toString();
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("NAME", ls_name);
+        editor.putString("ADDRESS", ls_address);
+        editor.putString("MAPS", ls_maps);
+        editor.putString("DIST", ls_dist);
+        editor.putString("PHONE", ls_phone);
+        editor.commit();
+        Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+
+        return true;
+    }
+
+    private Boolean validar() {
+        Boolean lb_error = false;
+        String ls_name = editTextName.getText().toString();
+        String ls_address = editTextAddress.getText().toString();
+        String ls_dist = editTextDist.getText().toString();
+        String ls_phone = editTextPhone.getText().toString();
+
+        if(ls_name.equals(""))
+        {
+            editTextName.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_address.equals(""))
+        {
+            editTextAddress.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_dist.equals(""))
+        {
+            editTextDist.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_phone.equals(""))
+        {
+            editTextPhone.setError("Requerido");
+            lb_error = true;
+        }
+
+        return !lb_error;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -143,66 +263,4 @@ public class FrEstacionamiento1 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public Boolean grabar(View v){
-        // Se capturan los controles de cajas de texto
-        // EditText editTextName = (EditText) getView().findViewById(R.id.editTextName);
-        if(!validacion())
-        {
-            return false;
-        }
-
-        String ls_name = editTextName.getText().toString();
-        String ls_address = editTextAddress.getText().toString();
-        String ls_maps = editTextMaps.getText().toString();
-        String ls_dist = editTextDist.getText().toString();
-        String ls_phone = editTextPhone.getText().toString();
-
-        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("NAME", ls_name);
-        editor.putString("ADDRESS", ls_address);
-        editor.putString("MAPS", ls_maps);
-        editor.putString("DIST", ls_dist);
-        editor.putString("PHONE", ls_phone);
-        editor.commit();
-        Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
-        toast.show();
-
-        return true;
-    }
-
-    private Boolean validacion() {
-        Boolean lb_error = false;
-        String ls_name = editTextName.getText().toString();
-        String ls_address = editTextAddress.getText().toString();
-        String ls_dist = editTextDist.getText().toString();
-        String ls_phone = editTextPhone.getText().toString();
-
-        if(ls_name.equals(""))
-        {
-            editTextName.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_address.equals(""))
-        {
-            editTextAddress.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_dist.equals(""))
-        {
-            editTextDist.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_phone.equals(""))
-        {
-            editTextPhone.setError("Requerido");
-            lb_error = true;
-        }
-
-        return !lb_error;
-    }
 }

@@ -1,5 +1,7 @@
 package com.example.dpmestacionamientos;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -42,14 +44,14 @@ public class DuenoActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        /*FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -102,6 +104,12 @@ public class DuenoActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             // Handle the camera action
         } else if (id == R.id.nav_new_estacionamiento) {
+
+            SharedPreferences prefs = this.getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("ACCION", "N");
+            editor.commit();
+
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
         } else if (id == R.id.nav_busqueda) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).commit();

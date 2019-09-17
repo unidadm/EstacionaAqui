@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -18,10 +19,12 @@ import android.widget.Spinner;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
-import com.example.dpmestacionamientos.data.model.ModelEstacionamiento;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.UUID;
 
@@ -50,6 +53,8 @@ public class FrEstacionamiento2 extends Fragment {
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+
+    String is_accion, is_id;
 
     public FrEstacionamiento2() {
         // Required empty public constructor
@@ -110,6 +115,15 @@ public class FrEstacionamiento2 extends Fragment {
         // Se inicializa Firebase
         inicializarFirebase();
 
+        // Se leen los parámetros
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        is_accion = prefs.getString("ACCION", "");
+
+        if(is_accion.equals("M"))
+        {
+            cargarDatos();
+        }
+
         // Boton Grabar
         Button button = (Button) view.findViewById(R.id.buttonSave);
         button.setOnClickListener(new View.OnClickListener()
@@ -120,12 +134,122 @@ public class FrEstacionamiento2 extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).commit();
                 }
             }
         });
 
         return view;
+    }
+
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
+
+    private void cargarDatos(){
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        is_id = prefs.getString("ID", "");
+
+        databaseReference.child("estacionamiento").orderByChild("id").equalTo(is_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                    Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
+
+                    editTextPrecio.setText(p.getPreciohora().toString());
+                    editTextLargo.setText(p.getLargo().toString());
+                    editTextAncho.setText(p.getAncho().toString());
+                    spinnerTipo.setSelection(((ArrayAdapter)spinnerTipo.getAdapter()).getPosition(p.getTipo()));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public Boolean grabar(View v){
+        if(!validar())
+        {
+            return false;
+        }
+        // Se capturan los valores del SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        String ls_name = prefs.getString("NAME", "");
+        String ls_address = prefs.getString("ADDRESS", "");
+        String ls_maps = prefs.getString("MAPS", "");
+        String ls_dist = prefs.getString("DIST", "");
+        String ls_phone = prefs.getString("PHONE", "");
+
+        Double ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
+        Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
+        Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
+        String ls_tipo = spinnerTipo.getSelectedItem().toString();
+
+        Estacionamiento p = new Estacionamiento();
+        if(is_accion.equals("M"))
+        {
+            p.setId(is_id);
+        }
+        else {
+            p.setId(UUID.randomUUID().toString());
+        }
+        p.setNombre(ls_name);
+        p.setDireccion(ls_address);
+        p.setDirecciongooglemaps(ls_maps);
+        p.setDistrito(ls_dist);
+        p.setTelefono(ls_phone);
+        p.setPreciohora(ldbl_precio);
+        p.setLargo(ldbl_largo);
+        p.setAncho(ldbl_ancho);
+        p.setTipo(ls_tipo);
+
+        databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
+        Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
+
+        return true;
+    }
+
+    private Boolean validar() {
+        Boolean lb_error = false;
+        String ls_precio = editTextPrecio.getText().toString();
+        String ls_largo = editTextLargo.getText().toString();
+        String ls_ancho = editTextAncho.getText().toString();
+        String ls_tipo = spinnerTipo.getSelectedItem().toString();
+
+        Double ldbl_precio = 0.0;
+
+        if(ls_precio.equals(""))
+        {
+            editTextPrecio.setError("Requerido");
+            lb_error = true;
+        }
+        else {
+            ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
+        }
+        if(ldbl_precio <= 0.0){
+            editTextPrecio.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_largo.equals(""))
+        {
+            editTextLargo.setError("Requerido");
+            lb_error = true;
+        }
+
+        if(ls_ancho.equals(""))
+        {
+            editTextAncho.setError("Requerido");
+            lb_error = true;
+        }
+
+        return !lb_error;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -167,82 +291,4 @@ public class FrEstacionamiento2 extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    private void inicializarFirebase() {
-        FirebaseApp.initializeApp(getActivity());
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-    }
-
-    public Boolean grabar(View v){
-        if(!validacion())
-        {
-            return false;
-        }
-        // Se capturan los valores del SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
-        String ls_name = prefs.getString("NAME", "");
-        String ls_address = prefs.getString("ADDRESS", "");
-        String ls_maps = prefs.getString("MAPS", "");
-        String ls_dist = prefs.getString("DIST", "");
-        String ls_phone = prefs.getString("PHONE", "");
-
-        Double ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
-        Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
-        Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
-        String ls_tipo = spinnerTipo.getSelectedItem().toString();
-
-        ModelEstacionamiento p = new ModelEstacionamiento();
-        p.setId(UUID.randomUUID().toString());
-        p.setNombre(ls_name);
-        p.setDireccion(ls_address);
-        p.setDirecciongooglemaps(ls_maps);
-        p.setDistrito(ls_dist);
-        p.setTelefono(ls_phone);
-        p.setPreciohora(ldbl_precio);
-        p.setLargo(ldbl_largo);
-        p.setAncho(ldbl_ancho);
-        p.setTipo(ls_tipo);
-
-        databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
-        Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
-
-        return true;
-    }
-
-    private Boolean validacion() {
-        Boolean lb_error = false;
-        String ls_precio = editTextPrecio.getText().toString();
-        String ls_largo = editTextLargo.getText().toString();
-        String ls_ancho = editTextAncho.getText().toString();
-        String ls_tipo = spinnerTipo.getSelectedItem().toString();
-
-        Double ldbl_precio = 0.0;
-
-        if(ls_precio.equals(""))
-        {
-            editTextPrecio.setError("Requerido");
-            lb_error = true;
-        }
-        else {
-            ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
-        }
-        if(ldbl_precio <= 0.0){
-            editTextPrecio.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_largo.equals(""))
-        {
-            editTextLargo.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_ancho.equals(""))
-        {
-            editTextAncho.setError("Requerido");
-            lb_error = true;
-        }
-
-        return !lb_error;
-    }
 }

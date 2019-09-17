@@ -9,9 +9,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class EstacionamientosAdapter extends
-        RecyclerView.Adapter<EstacionamientosAdapter.MyViewHolder>{
+        RecyclerView.Adapter<EstacionamientosAdapter.MyViewHolder>
+        implements View.OnClickListener{
 
     private List<Estacionamiento> estacionamientosList;
+    private View.OnClickListener listener;
+
+    public void setOnClickListener(View.OnClickListener listener){
+        this.listener=listener;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (listener != null){
+            listener.onClick(view);
+        }
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -35,6 +48,8 @@ public class EstacionamientosAdapter extends
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.estacionamiento_fila, parent, false);
 
+        itemView.setOnClickListener(this);
+
         return new MyViewHolder(itemView);
     }
 
@@ -43,7 +58,7 @@ public class EstacionamientosAdapter extends
         Estacionamiento estacionamiento = estacionamientosList.get(position);
         holder.nombre.setText(estacionamiento.getNombre());
         holder.distrito.setText(estacionamiento.getDistrito());
-        holder.precio.setText(estacionamiento.getPrecio());
+        holder.precio.setText(estacionamiento.getPreciohora().toString());
     }
 
     @Override
