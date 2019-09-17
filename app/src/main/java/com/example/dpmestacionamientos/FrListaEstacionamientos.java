@@ -23,6 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -55,6 +56,8 @@ public class FrListaEstacionamientos extends Fragment {
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+
+    String is_tipo, is_distrito, is_ubicacion;
 
     public FrListaEstacionamientos() {
         // Required empty public constructor
@@ -138,6 +141,13 @@ public class FrListaEstacionamientos extends Fragment {
     }
 
     private void listarDatos(){
+        // Se capturan los valores del SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("FILTROS", Context.MODE_PRIVATE);
+        is_tipo = prefs.getString("TIPO", "");
+        is_distrito = prefs.getString("DISTRITO", "");
+        is_ubicacion = prefs.getString("UBICACION", "");
+
+        /*
         databaseReference.child("estacionamiento").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -153,8 +163,48 @@ public class FrListaEstacionamientos extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
+
+        if(is_distrito.equals(""))
+        {
+            databaseReference.child("estacionamiento").addListenerForSingleValueEvent(valueEventListener);
+        }
+        else{
+            Query query = FirebaseDatabase.getInstance().getReference("estacionamiento")
+                    .orderByChild("distrito")
+                    .equalTo(is_distrito);
+
+            query.addListenerForSingleValueEvent(valueEventListener);
+        }
+
     }
+
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            String ls_tipo, ls_ubicacion;
+
+            estacionamientoList.clear();
+            for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
+
+                ls_tipo = p.getTipo();
+                ls_ubicacion = p.getUbicacion();
+
+                if ((is_tipo.equals("") || is_tipo.equals(ls_tipo)) &&
+                        (is_ubicacion.equals("") || is_ubicacion.equals(ls_ubicacion))){
+                    estacionamientoList.add(p);
+                }
+
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     private void prepareEstacionamientoData() {
         /*

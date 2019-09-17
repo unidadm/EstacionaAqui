@@ -14,11 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -48,7 +50,8 @@ public class FrEstacionamiento1 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    EditText editTextName, editTextAddress, editTextMaps, editTextDist, editTextPhone;
+    EditText editTextName, editTextAddress, editTextMaps, editTextPhone;
+    Spinner spinnerDistrito;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -96,8 +99,16 @@ public class FrEstacionamiento1 extends Fragment {
         editTextName = view.findViewById(R.id.editTextName);
         editTextAddress = view.findViewById(R.id.editTextAddress);
         editTextMaps = view.findViewById(R.id.editTextMaps);
-        editTextDist = view.findViewById(R.id.editTextDist);
+        spinnerDistrito = view.findViewById(R.id.spinnerDistrito);
         editTextPhone = view.findViewById(R.id.editTextPhone);
+
+        // Llenado del combo de Distrito
+        final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
+
+        ArrayAdapter<String> adaptadorDistritos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, distritos);
+        adaptadorDistritos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinnerDistrito.setAdapter(adaptadorDistritos);
 
         // Se inicializa Firebase
         inicializarFirebase();
@@ -149,7 +160,7 @@ public class FrEstacionamiento1 extends Fragment {
                     editTextName.setText(p.getNombre());
                     editTextAddress.setText(p.getDireccion());
                     editTextMaps.setText(p.getDirecciongooglemaps());
-                    editTextDist.setText(p.getDistrito());
+                    spinnerDistrito.setSelection(((ArrayAdapter)spinnerDistrito.getAdapter()).getPosition(p.getDistrito()));
                     editTextPhone.setText(p.getTelefono());
                 }
             }
@@ -172,7 +183,7 @@ public class FrEstacionamiento1 extends Fragment {
         String ls_name = editTextName.getText().toString();
         String ls_address = editTextAddress.getText().toString();
         String ls_maps = editTextMaps.getText().toString();
-        String ls_dist = editTextDist.getText().toString();
+        String ls_dist = spinnerDistrito.getSelectedItem().toString();
         String ls_phone = editTextPhone.getText().toString();
 
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
@@ -194,7 +205,7 @@ public class FrEstacionamiento1 extends Fragment {
         Boolean lb_error = false;
         String ls_name = editTextName.getText().toString();
         String ls_address = editTextAddress.getText().toString();
-        String ls_dist = editTextDist.getText().toString();
+        String ls_dist = spinnerDistrito.getSelectedItem().toString();
         String ls_phone = editTextPhone.getText().toString();
 
         if(ls_name.equals(""))
@@ -211,7 +222,7 @@ public class FrEstacionamiento1 extends Fragment {
 
         if(ls_dist.equals(""))
         {
-            editTextDist.setError("Requerido");
+            //spinnerDistrito.setEr;
             lb_error = true;
         }
 

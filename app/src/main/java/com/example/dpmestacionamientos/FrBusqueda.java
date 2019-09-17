@@ -1,6 +1,7 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -34,6 +35,8 @@ public class FrBusqueda extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    Spinner comboTipos, comboDistritos, comboUbicaciones;
 
     public FrBusqueda() {
         // Required empty public constructorffff
@@ -72,9 +75,9 @@ public class FrBusqueda extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_busqueda, container, false);
 
-        final String[] tipos = new String[] {"Exterior", "Interior", "Aire Libre" };
-        final String[] distritos = new String[] {"Barranco", "San Miguel", "Surco" };
-        final String[] ubicaciones = new String[] {"Primer Piso", "Azotea", "Sótano" };
+        final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
+        final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
+        final String[] ubicaciones = new String[] {"", "Primer Piso", "Azotea", "Sótano" };
 
         ArrayAdapter<String> adaptadorTipos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
         adaptadorTipos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -85,13 +88,13 @@ public class FrBusqueda extends Fragment {
         ArrayAdapter<String> adaptadorUbicaciones = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, ubicaciones);
         adaptadorUbicaciones.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        Spinner comboTipos = (Spinner) view.findViewById(R.id.spinnerTipo);
+        comboTipos = (Spinner) view.findViewById(R.id.spinnerTipo);
         comboTipos.setAdapter(adaptadorTipos);
 
-        Spinner comboDistritos = (Spinner) view.findViewById(R.id.spinnerDistrito);
+        comboDistritos = (Spinner) view.findViewById(R.id.spinnerDistrito);
         comboDistritos.setAdapter(adaptadorDistritos);
 
-        Spinner comboUbicaciones = (Spinner) view.findViewById(R.id.spinnerUbicacion);
+        comboUbicaciones = (Spinner) view.findViewById(R.id.spinnerUbicacion);
         comboUbicaciones.setAdapter(adaptadorUbicaciones);
 
         //Botón Buscar
@@ -102,6 +105,13 @@ public class FrBusqueda extends Fragment {
             public void onClick(View v)
             {
                 // do something
+                SharedPreferences prefs = getActivity().getSharedPreferences("FILTROS", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("TIPO", comboTipos.getSelectedItem().toString());
+                editor.putString("DISTRITO", comboDistritos.getSelectedItem().toString());
+                editor.putString("UBICACION", comboUbicaciones.getSelectedItem().toString());
+                editor.commit();
+
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).commit();
             }

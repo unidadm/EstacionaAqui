@@ -49,7 +49,7 @@ public class FrEstacionamiento2 extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     EditText editTextPrecio, editTextLargo, editTextAncho;
-    Spinner spinnerTipo;
+    Spinner spinnerTipo, spinnerUbicacion;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -99,18 +99,24 @@ public class FrEstacionamiento2 extends Fragment {
         editTextLargo = view.findViewById(R.id.editTextLargo);
         editTextAncho = view.findViewById(R.id.editTextAncho);
         spinnerTipo = view.findViewById(R.id.spinnerTipo);
+        spinnerUbicacion = view.findViewById(R.id.spinnerUbicacion);
 
         editTextPrecio.setText("0.00");
         editTextLargo.setText("0.00");
         editTextAncho.setText("0.00");
 
-        // Llenado del combo de Tipo
+        // Llenado del combo de Tipo y Ubicacion
         final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
+        final String[] ubicaciones = new String[] {"", "Primer Piso", "Azotea", "Sótano" };
 
         ArrayAdapter<String> adaptador = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
         adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        ArrayAdapter<String> adaptadorUbicaciones = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, ubicaciones);
+        adaptadorUbicaciones.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         spinnerTipo.setAdapter(adaptador);
+        spinnerUbicacion.setAdapter(adaptadorUbicaciones);
 
         // Se inicializa Firebase
         inicializarFirebase();
@@ -163,6 +169,7 @@ public class FrEstacionamiento2 extends Fragment {
                     editTextLargo.setText(p.getLargo().toString());
                     editTextAncho.setText(p.getAncho().toString());
                     spinnerTipo.setSelection(((ArrayAdapter)spinnerTipo.getAdapter()).getPosition(p.getTipo()));
+                    spinnerUbicacion.setSelection(((ArrayAdapter)spinnerUbicacion.getAdapter()).getPosition(p.getUbicacion()));
                 }
             }
 
@@ -190,6 +197,7 @@ public class FrEstacionamiento2 extends Fragment {
         Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
         Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
         String ls_tipo = spinnerTipo.getSelectedItem().toString();
+        String ls_ubicacion = spinnerUbicacion.getSelectedItem().toString();
 
         Estacionamiento p = new Estacionamiento();
         if(is_accion.equals("M"))
@@ -208,6 +216,7 @@ public class FrEstacionamiento2 extends Fragment {
         p.setLargo(ldbl_largo);
         p.setAncho(ldbl_ancho);
         p.setTipo(ls_tipo);
+        p.setUbicacion(ls_ubicacion);
 
         databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
         Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
@@ -220,7 +229,6 @@ public class FrEstacionamiento2 extends Fragment {
         String ls_precio = editTextPrecio.getText().toString();
         String ls_largo = editTextLargo.getText().toString();
         String ls_ancho = editTextAncho.getText().toString();
-        String ls_tipo = spinnerTipo.getSelectedItem().toString();
 
         Double ldbl_precio = 0.0;
 

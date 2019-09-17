@@ -58,14 +58,13 @@
         android:layout_height="wrap_content"
         android:text="Distrito" />
 
-    <EditText
-        android:id="@+id/editTextDist"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/spinnerDistrito"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Ingrese Distrito"
-        android:inputType="textPersonName"
-        android:text="" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        />
 
     <TextView
         android:id="@+id/textViewPhone"
