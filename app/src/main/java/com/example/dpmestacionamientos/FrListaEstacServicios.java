@@ -8,13 +8,16 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -24,17 +27,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FrServicio.OnFragmentInteractionListener} interface
+ * {@link FrListaEstacServicios.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FrServicio#newInstance} factory method to
+ * Use the {@link FrListaEstacServicios#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FrServicio extends Fragment {
+public class FrListaEstacServicios extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,14 +51,16 @@ public class FrServicio extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    EditText editTextTipo, editTextDescripcion;
+    TextView textViewEstacionamiento;
+
+    private List<EstacionamientoServicio> estacionamientoservicioList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private EstacionamientoServiciosAdapter mAdapter;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
 
-    String is_accion, is_id;
-
-    public FrServicio() {
+    public FrListaEstacServicios() {
         // Required empty public constructor
     }
 
@@ -63,11 +70,11 @@ public class FrServicio extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FrServicio.
+     * @return A new instance of fragment FrListaEstacServicios.
      */
     // TODO: Rename and change types and number of parameters
-    public static FrServicio newInstance(String param1, String param2) {
-        FrServicio fragment = new FrServicio();
+    public static FrListaEstacServicios newInstance(String param1, String param2) {
+        FrListaEstacServicios fragment = new FrListaEstacServicios();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -88,36 +95,61 @@ public class FrServicio extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_fr_servicio, container, false);
+        View view = inflater.inflate(R.layout.fragment_fr_lista_estac_servicios, container, false);
 
         // Se capturan los controles de cajas de texto
-        editTextTipo = view.findViewById(R.id.editTextTipo);
-        editTextDescripcion = view.findViewById(R.id.editTextDescripcion);
+        textViewEstacionamiento = view.findViewById(R.id.textViewEstacionamiento);
+
+        //LLenado del RecyclerView
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+
+        mAdapter = new EstacionamientoServiciosAdapter(estacionamientoservicioList);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+
+        //Evento click del RecyclerView
+        mAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTOSERVICIO", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("ACCION", "M");
+                editor.putString("ID", estacionamientoservicioList.get(recyclerView.getChildAdapterPosition(view)).getId());
+                editor.commit();
+
+                Toast.makeText(getActivity(), "Selección:" + estacionamientoservicioList.get(recyclerView.getChildAdapterPosition(view)).getDescripcion(), Toast.LENGTH_LONG).show();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamientoServicio()).addToBackStack(null).commit();
+            }
+        });
+
+        recyclerView.setAdapter(mAdapter);
 
         // Se inicializa Firebase
         inicializarFirebase();
 
-        // Se leen los parámetros
-        SharedPreferences prefs = getActivity().getSharedPreferences("SERVICIO", Context.MODE_PRIVATE);
-        is_accion = prefs.getString("ACCION", "");
+        listarDatos();
+        //prepareEstacionamientoServicioData();
 
-        if(is_accion.equals("M"))
-        {
-            cargarDatos();
-        }
-
-        // Boton Grabar
-        Button button = (Button) view.findViewById(R.id.buttonSave);
+        //Botón Nuevo
+        Button button = (Button) view.findViewById(R.id.buttonNew);
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if(grabar(v))
-                {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaServicios()).addToBackStack(null).commit();
-                }
+                // do something
+                SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTOSERVICIO", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("ACCION", "N");
+                editor.commit();
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamientoServicio()).addToBackStack(null).commit();
             }
         });
 
@@ -130,20 +162,23 @@ public class FrServicio extends Fragment {
         databaseReference = firebaseDatabase.getReference();
     }
 
-    private void cargarDatos(){
-        SharedPreferences prefs = getActivity().getSharedPreferences("SERVICIO", Context.MODE_PRIVATE);
-        is_id = prefs.getString("ID", "");
+    private void listarDatos(){
+        // Se capturan los valores del SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        String ls_id = prefs.getString("ID", "");
+        String ls_nombre = prefs.getString("NAME", "");
 
-        databaseReference.child("servicio").orderByChild("id").equalTo(is_id).addListenerForSingleValueEvent(new ValueEventListener() {
+        textViewEstacionamiento.setText(ls_nombre);
+
+        databaseReference.child("estacionamientoservicio").orderByChild("idestacionamiento").equalTo(ls_id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
+                estacionamientoservicioList.clear();
                 for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
-                    Servicio p = objSnapshot.getValue(Servicio.class);
-
-                    editTextTipo.setText(p.getTipo());
-                    editTextDescripcion.setText(p.getDescripcion());
+                    EstacionamientoServicio p = objSnapshot.getValue(EstacionamientoServicio.class);
+                    estacionamientoservicioList.add(p);
                 }
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -153,50 +188,11 @@ public class FrServicio extends Fragment {
         });
     }
 
-    public Boolean grabar(View v){
-        if(!validar())
-        {
-            return false;
-        }
+    private void prepareEstacionamientoServicioData() {
+        EstacionamientoServicio servicio = new EstacionamientoServicio("Lavado de Vehículo", 2.50);
+        estacionamientoservicioList.add(servicio);
 
-        String ls_tipo = editTextTipo.getText().toString();
-        String ls_descripcion = editTextDescripcion.getText().toString();
-
-        Servicio p = new Servicio();
-        if(is_accion.equals("M"))
-        {
-            p.setId(is_id);
-        }
-        else {
-            p.setId(UUID.randomUUID().toString());
-        }
-        p.setTipo(ls_tipo);
-        p.setDescripcion(ls_descripcion);
-
-        databaseReference.child("servicio").child(p.getId()).setValue(p);
-        Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
-
-        return true;
-    }
-
-    private Boolean validar() {
-        Boolean lb_error = false;
-        String ls_tipo = editTextTipo.getText().toString();
-        String ls_descripcion = editTextDescripcion.getText().toString();
-
-        if(ls_tipo.equals(""))
-        {
-            editTextTipo.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_descripcion.equals(""))
-        {
-            editTextDescripcion.setError("Requerido");
-            lb_error = true;
-        }
-
-        return !lb_error;
+        mAdapter.notifyDataSetChanged();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

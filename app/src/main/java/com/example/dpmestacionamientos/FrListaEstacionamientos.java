@@ -119,7 +119,7 @@ public class FrListaEstacionamientos extends Fragment {
 
                 Toast.makeText(getActivity(), "Selección:" + estacionamientoList.get(recyclerView.getChildAdapterPosition(view)).getNombre(), Toast.LENGTH_LONG).show();
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).addToBackStack(null).commit();
             }
         });
 

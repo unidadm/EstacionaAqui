@@ -1,9 +1,11 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -15,6 +17,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +53,9 @@ public class FrListaServicios extends Fragment {
     private List<Servicio> servicioList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ServiciosAdapter mAdapter;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     public FrListaServicios() {
         // Required empty public constructor
@@ -79,8 +92,9 @@ public class FrListaServicios extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_fr_lista_servicios, container, false);
+        View view = inflater.inflate(R.layout.fragment_fr_lista_servicios, container, false);
 
+        //LLenado del RecyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         mAdapter = new ServiciosAdapter(servicioList);
@@ -90,9 +104,30 @@ public class FrListaServicios extends Fragment {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
 
+        //Evento click del RecyclerView
+        mAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                SharedPreferences prefs = getActivity().getSharedPreferences("SERVICIO", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("ACCION", "M");
+                editor.putString("ID", servicioList.get(recyclerView.getChildAdapterPosition(view)).getId());
+                editor.commit();
+
+                Toast.makeText(getActivity(), "Selección:" + servicioList.get(recyclerView.getChildAdapterPosition(view)).getTipo(), Toast.LENGTH_LONG).show();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrServicio()).addToBackStack(null).commit();
+            }
+        });
+
         recyclerView.setAdapter(mAdapter);
 
-        prepareServicioData();
+        // Se inicializa Firebase
+        inicializarFirebase();
+
+        listarDatos();
+        //prepareServicioData();
 
         //Botón Nuevo
         Button button = (Button) view.findViewById(R.id.buttonNew);
@@ -102,12 +137,42 @@ public class FrListaServicios extends Fragment {
             public void onClick(View v)
             {
                 // do something
+                SharedPreferences prefs = getActivity().getSharedPreferences("SERVICIO", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("ACCION", "N");
+                editor.commit();
+
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrServicio()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrServicio()).addToBackStack(null).commit();
             }
         });
 
         return view;
+    }
+
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
+
+    private void listarDatos(){
+        databaseReference.child("servicio").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                servicioList.clear();
+                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                    Servicio p = objSnapshot.getValue(Servicio.class);
+                    servicioList.add(p);
+                }
+                mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void prepareServicioData() {

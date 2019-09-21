@@ -35,7 +35,9 @@ public class DuenoActivity extends AppCompatActivity
         FrServicio.OnFragmentInteractionListener,
         FrLlamarDueno.OnFragmentInteractionListener,
         FrBusquedaAlquileres.OnFragmentInteractionListener,
-        FrListaAlquileres.OnFragmentInteractionListener{
+        FrListaAlquileres.OnFragmentInteractionListener,
+        FrListaEstacServicios.OnFragmentInteractionListener,
+        FrEstacionamientoServicio.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,15 +116,15 @@ public class DuenoActivity extends AppCompatActivity
             editor.putString("ACCION", "N");
             editor.commit();
 
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).addToBackStack(null).commit();
         } else if (id == R.id.nav_busqueda) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).addToBackStack(null).commit();
         } else if (id == R.id.nav_servicios) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaServicios()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaServicios()).addToBackStack(null).commit();
         } else if (id == R.id.nav_alquileres) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).addToBackStack(null).commit();
         } else if (id == R.id.nav_llamar) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).addToBackStack(null).commit();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

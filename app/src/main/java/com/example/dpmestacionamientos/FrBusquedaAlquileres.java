@@ -72,7 +72,7 @@ public class FrBusquedaAlquileres extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_busqueda_alquileres, container, false);
 
-        final String[] distritos = new String[] {"Barranco", "San Miguel", "Surco" };
+        final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
         final String[] estacionamientos = new String[] {"Estacionamiento Don Pedrito", "Los Portalitos", "Estac. Los Suspiros" };
 
         ArrayAdapter<String> adaptadorDistritos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, distritos);
@@ -96,7 +96,7 @@ public class FrBusquedaAlquileres extends Fragment {
             {
                 // do something
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaAlquileres()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaAlquileres()).addToBackStack(null).commit();
             }
         });
 

@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ServiciosAdapter extends
-        RecyclerView.Adapter<ServiciosAdapter.MyViewHolder>
+public class EstacionamientoServiciosAdapter extends
+        RecyclerView.Adapter<EstacionamientoServiciosAdapter.MyViewHolder>
         implements View.OnClickListener{
 
-    private List<Servicio> serviciosList;
+    private List<EstacionamientoServicio> estacionamientoserviciosList;
     private View.OnClickListener listener;
 
     public void setOnClickListener(View.OnClickListener listener){
@@ -28,24 +28,23 @@ public class ServiciosAdapter extends
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView tipo, descripcion;
+        public TextView descripcion, tarifa;
 
         public MyViewHolder(View view) {
             super(view);
-            tipo = (TextView) view.findViewById(R.id.tipo);
             descripcion = (TextView) view.findViewById(R.id.descripcion);
+            tarifa = (TextView) view.findViewById(R.id.tarifa);
         }
     }
 
-
-    public ServiciosAdapter(List<Servicio> serviciosList) {
-        this.serviciosList = serviciosList;
+    public EstacionamientoServiciosAdapter(List<EstacionamientoServicio> estacionamientoserviciosList) {
+        this.estacionamientoserviciosList = estacionamientoserviciosList;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.servicio_fila, parent, false);
+                .inflate(R.layout.estacionamientoservicio_fila, parent, false);
 
         itemView.setOnClickListener(this);
 
@@ -54,14 +53,13 @@ public class ServiciosAdapter extends
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        Servicio servicio = serviciosList.get(position);
-        holder.tipo.setText(servicio.getTipo());
-        holder.descripcion.setText(servicio.getDescripcion());
+        EstacionamientoServicio estacionamientoservicio = estacionamientoserviciosList.get(position);
+        holder.descripcion.setText(estacionamientoservicio.getDescripcion());
+        holder.tarifa.setText(estacionamientoservicio.getTarifa().toString());
     }
 
     @Override
     public int getItemCount() {
-        return serviciosList.size();
+        return estacionamientoserviciosList.size();
     }
-
 }

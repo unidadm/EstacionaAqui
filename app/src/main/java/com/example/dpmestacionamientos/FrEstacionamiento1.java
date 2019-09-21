@@ -2,6 +2,7 @@ package com.example.dpmestacionamientos;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -21,6 +22,7 @@ import android.content.SharedPreferences;
 import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -52,6 +54,7 @@ public class FrEstacionamiento1 extends Fragment {
 
     EditText editTextName, editTextAddress, editTextMaps, editTextPhone;
     Spinner spinnerDistrito;
+    Button buttonNext, buttonServicios;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -101,6 +104,8 @@ public class FrEstacionamiento1 extends Fragment {
         editTextMaps = view.findViewById(R.id.editTextMaps);
         spinnerDistrito = view.findViewById(R.id.spinnerDistrito);
         editTextPhone = view.findViewById(R.id.editTextPhone);
+        buttonNext = view.findViewById(R.id.buttonNext);
+        buttonServicios = view.findViewById(R.id.buttonServicios);
 
         // Llenado del combo de Distrito
         final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
@@ -121,10 +126,12 @@ public class FrEstacionamiento1 extends Fragment {
         {
             cargarDatos();
         }
+        else{
+            buttonServicios.setVisibility(View.INVISIBLE);
+        }
 
         // Boton Grabar
-        Button button = (Button) view.findViewById(R.id.buttonNext);
-        button.setOnClickListener(new View.OnClickListener()
+        buttonNext.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -132,8 +139,19 @@ public class FrEstacionamiento1 extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).addToBackStack(null).commit();
                 }
+            }
+        });
+
+        // Botón Servicios Adicionales
+        buttonServicios.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacServicios()).addToBackStack(null).commit();
             }
         });
 
@@ -162,6 +180,11 @@ public class FrEstacionamiento1 extends Fragment {
                     editTextMaps.setText(p.getDirecciongooglemaps());
                     spinnerDistrito.setSelection(((ArrayAdapter)spinnerDistrito.getAdapter()).getPosition(p.getDistrito()));
                     editTextPhone.setText(p.getTelefono());
+
+                    SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("NAME", editTextName.getText().toString());
+                    editor.commit();
                 }
             }
 
@@ -223,6 +246,10 @@ public class FrEstacionamiento1 extends Fragment {
         if(ls_dist.equals(""))
         {
             //spinnerDistrito.setEr;
+            TextView errorText = (TextView)spinnerDistrito.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);//just to highlight that this is an error
+            errorText.setText("Requerido");//changes the selected item text to this
             lb_error = true;
         }
 

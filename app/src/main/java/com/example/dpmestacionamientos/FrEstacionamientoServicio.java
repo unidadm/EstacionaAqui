@@ -1,6 +1,8 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -8,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-
-import android.content.SharedPreferences;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -26,17 +28,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FrEstacionamiento2.OnFragmentInteractionListener} interface
+ * {@link FrEstacionamientoServicio.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FrEstacionamiento2#newInstance} factory method to
+ * Use the {@link FrEstacionamientoServicio#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FrEstacionamiento2 extends Fragment {
+public class FrEstacionamientoServicio extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -48,15 +51,19 @@ public class FrEstacionamiento2 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    EditText editTextPrecio, editTextLargo, editTextAncho;
-    Spinner spinnerTipo, spinnerUbicacion;
+    TextView textViewEstacionamiento;
+    EditText editTextTarifa;
+    Spinner spinnerTipo;
+    Button buttonSave;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
 
     String is_accion, is_id;
 
-    public FrEstacionamiento2() {
+    ArrayList<String> ias_tipos = new ArrayList<String>();
+
+    public FrEstacionamientoServicio() {
         // Required empty public constructor
     }
 
@@ -66,11 +73,11 @@ public class FrEstacionamiento2 extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FrEstacionamiento2.
+     * @return A new instance of fragment FrEstacionamientoServicio.
      */
     // TODO: Rename and change types and number of parameters
-    public static FrEstacionamiento2 newInstance(String param1, String param2) {
-        FrEstacionamiento2 fragment = new FrEstacionamiento2();
+    public static FrEstacionamientoServicio newInstance(String param1, String param2) {
+        FrEstacionamientoServicio fragment = new FrEstacionamientoServicio();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -90,39 +97,23 @@ public class FrEstacionamiento2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_fr_estacionamiento2, container, false);
+        View view = inflater.inflate(R.layout.fragment_fr_estacionamiento_servicio, container, false);
 
         // Se capturan los controles de cajas de texto
-        editTextPrecio = view.findViewById(R.id.editTextPrecio);
-        editTextLargo = view.findViewById(R.id.editTextLargo);
-        editTextAncho = view.findViewById(R.id.editTextAncho);
+        textViewEstacionamiento = view.findViewById(R.id.textViewEstacionamiento);
+        editTextTarifa = view.findViewById(R.id.editTextTarifa);
         spinnerTipo = view.findViewById(R.id.spinnerTipo);
-        spinnerUbicacion = view.findViewById(R.id.spinnerUbicacion);
-
-        editTextPrecio.setText("0.00");
-        editTextLargo.setText("0.00");
-        editTextAncho.setText("0.00");
-
-        // Llenado del combo de Tipo y Ubicacion
-        final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
-        final String[] ubicaciones = new String[] {"", "Primer Piso", "Azotea", "Sótano" };
-
-        ArrayAdapter<String> adaptador = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, tipos);
-        adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        ArrayAdapter<String> adaptadorUbicaciones = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, ubicaciones);
-        adaptadorUbicaciones.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinnerTipo.setAdapter(adaptador);
-        spinnerUbicacion.setAdapter(adaptadorUbicaciones);
+        buttonSave = view.findViewById(R.id.buttonSave);
 
         // Se inicializa Firebase
         inicializarFirebase();
 
+        // Se llenan los combos
+        llenarSpinners();
+
         // Se leen los parámetros
-        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTOSERVICIO", Context.MODE_PRIVATE);
         is_accion = prefs.getString("ACCION", "");
 
         if(is_accion.equals("M"))
@@ -130,9 +121,13 @@ public class FrEstacionamiento2 extends Fragment {
             cargarDatos();
         }
 
+        // Titulo del estacionamiento
+        prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        String ls_nombre = prefs.getString("NAME", "");
+        textViewEstacionamiento.setText(ls_nombre);
+
         // Boton Grabar
-        Button button = (Button) view.findViewById(R.id.buttonSave);
-        button.setOnClickListener(new View.OnClickListener()
+        buttonSave.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -140,7 +135,7 @@ public class FrEstacionamiento2 extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacServicios()).addToBackStack(null).commit();
                 }
             }
         });
@@ -154,22 +149,46 @@ public class FrEstacionamiento2 extends Fragment {
         databaseReference = firebaseDatabase.getReference();
     }
 
-    private void cargarDatos(){
-        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
-        is_id = prefs.getString("ID", "");
+    private void llenarSpinners(){
+        // Llenado del combo de Servicios
+        ias_tipos.add("");
 
-        databaseReference.child("estacionamiento").orderByChild("id").equalTo(is_id).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("servicio").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
-                    Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
+                    Servicio p = objSnapshot.getValue(Servicio.class);
 
-                    editTextPrecio.setText(p.getPreciohora().toString());
-                    editTextLargo.setText(p.getLargo().toString());
-                    editTextAncho.setText(p.getAncho().toString());
-                    spinnerTipo.setSelection(((ArrayAdapter)spinnerTipo.getAdapter()).getPosition(p.getTipo()));
-                    spinnerUbicacion.setSelection(((ArrayAdapter)spinnerUbicacion.getAdapter()).getPosition(p.getUbicacion()));
+                    ias_tipos.add(p.getTipo().toString());
+                }
+
+                ArrayAdapter<String> adaptadorTipos = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, ias_tipos);
+                adaptadorTipos.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                spinnerTipo.setAdapter(adaptadorTipos);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void cargarDatos(){
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTOSERVICIO", Context.MODE_PRIVATE);
+        is_id = prefs.getString("ID", "");
+
+        databaseReference.child("estacionamientoservicio").orderByChild("id").equalTo(is_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                    EstacionamientoServicio p = objSnapshot.getValue(EstacionamientoServicio.class);
+
+                    editTextTarifa.setText(p.getTarifa().toString());
+                    spinnerTipo.setSelection(((ArrayAdapter)spinnerTipo.getAdapter()).getPosition(p.getDescripcion()));
                 }
             }
 
@@ -185,21 +204,15 @@ public class FrEstacionamiento2 extends Fragment {
         {
             return false;
         }
+
         // Se capturan los valores del SharedPreferences
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
-        String ls_name = prefs.getString("NAME", "");
-        String ls_address = prefs.getString("ADDRESS", "");
-        String ls_maps = prefs.getString("MAPS", "");
-        String ls_dist = prefs.getString("DIST", "");
-        String ls_phone = prefs.getString("PHONE", "");
+        String ls_idestacionamiento = prefs.getString("ID", "");
 
-        Double ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
-        Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
-        Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
         String ls_tipo = spinnerTipo.getSelectedItem().toString();
-        String ls_ubicacion = spinnerUbicacion.getSelectedItem().toString();
+        Double ldbl_tarifa = Double.parseDouble(editTextTarifa.getText().toString());
 
-        Estacionamiento p = new Estacionamiento();
+        EstacionamientoServicio p = new EstacionamientoServicio();
         if(is_accion.equals("M"))
         {
             p.setId(is_id);
@@ -207,18 +220,11 @@ public class FrEstacionamiento2 extends Fragment {
         else {
             p.setId(UUID.randomUUID().toString());
         }
-        p.setNombre(ls_name);
-        p.setDireccion(ls_address);
-        p.setDirecciongooglemaps(ls_maps);
-        p.setDistrito(ls_dist);
-        p.setTelefono(ls_phone);
-        p.setPreciohora(ldbl_precio);
-        p.setLargo(ldbl_largo);
-        p.setAncho(ldbl_ancho);
-        p.setTipo(ls_tipo);
-        p.setUbicacion(ls_ubicacion);
+        p.setDescripcion(ls_tipo);
+        p.setTarifa(ldbl_tarifa);
+        p.setIdestacionamiento(ls_idestacionamiento);
 
-        databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
+        databaseReference.child("estacionamientoservicio").child(p.getId()).setValue(p);
         Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
 
         return true;
@@ -226,34 +232,31 @@ public class FrEstacionamiento2 extends Fragment {
 
     private Boolean validar() {
         Boolean lb_error = false;
-        String ls_precio = editTextPrecio.getText().toString();
-        String ls_largo = editTextLargo.getText().toString();
-        String ls_ancho = editTextAncho.getText().toString();
+        String ls_tipo = spinnerTipo.getSelectedItem().toString();
+        String ls_tarifa = editTextTarifa.getText().toString();
 
-        Double ldbl_precio = 0.0;
+        Double ldbl_tarifa = 0.0;
 
-        if(ls_precio.equals(""))
+        if(ls_tipo.equals(""))
         {
-            editTextPrecio.setError("Requerido");
+            //spinnerDistrito.setEr;
+            TextView errorText = (TextView)spinnerTipo.getSelectedView();
+            errorText.setError("");
+            errorText.setTextColor(Color.RED);//just to highlight that this is an error
+            errorText.setText("Requerido");//changes the selected item text to this
+            lb_error = true;
+        }
+
+        if(ls_tarifa.equals(""))
+        {
+            editTextTarifa.setError("Requerido");
             lb_error = true;
         }
         else {
-            ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
+            ldbl_tarifa = Double.parseDouble(editTextTarifa.getText().toString());
         }
-        if(ldbl_precio <= 0.0){
-            editTextPrecio.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_largo.equals(""))
-        {
-            editTextLargo.setError("Requerido");
-            lb_error = true;
-        }
-
-        if(ls_ancho.equals(""))
-        {
-            editTextAncho.setError("Requerido");
+        if(ldbl_tarifa <= 0.0){
+            editTextTarifa.setError("Requerido");
             lb_error = true;
         }
 
@@ -298,5 +301,4 @@ public class FrEstacionamiento2 extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-
 }

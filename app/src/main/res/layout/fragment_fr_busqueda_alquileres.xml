@@ -24,7 +24,7 @@
         android:id="@+id/textViewHasta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Desde" />
+        android:text="Hasta" />
 
     <EditText
         android:id="@+id/editTextHasta"

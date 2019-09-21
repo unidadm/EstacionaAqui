@@ -113,7 +113,7 @@ public class FrBusqueda extends Fragment {
                 editor.commit();
 
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).commit();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).addToBackStack(null).commit();
             }
         });
 
