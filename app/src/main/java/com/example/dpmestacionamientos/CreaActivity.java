@@ -15,10 +15,16 @@ import android.widget.Toast;
 import com.example.dpmestacionamientos.data.model.LoggedInUser;
 import com.example.dpmestacionamientos.data.model.Persona;
 import com.example.dpmestacionamientos.ui.login.LoginActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class CreaActivity extends AppCompatActivity {
@@ -27,6 +33,8 @@ public class CreaActivity extends AppCompatActivity {
     RadioButton tipo1, tipo2;
     FirebaseDatabase database;
     DatabaseReference myRef;
+
+    FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +50,7 @@ public class CreaActivity extends AppCompatActivity {
 
     iniciofirebase();
 
+        mAuth = FirebaseAuth.getInstance();
     }
 
     private void iniciofirebase() {
@@ -52,54 +61,81 @@ public class CreaActivity extends AppCompatActivity {
 
     public void Crear_New(View view)
     {
-        String nom = nombre.getText().toString();
-        String Ape = apellido.getText().toString();
-        String cor=correo.getText().toString();
-        String contrase = contra.getText().toString();
-        boolean t1 = tipo1.isChecked();
-        boolean t2 = tipo2.isChecked();
+        final String nom = nombre.getText().toString();
+       final String Ape = apellido.getText().toString();
+        final String cor=correo.getText().toString();
+        final String contrase = contra.getText().toString();
+        final boolean t1 = tipo1.isChecked();
+        final boolean t2 = tipo2.isChecked();
         if(nom.equals(""))
         {
             validacion();
 
         }
-        if (Ape.equals("")){
+      else  if (Ape.equals("")){
             validacion();
 
         }
-        if (cor.equals("")){
+       else if (cor.equals("")){
             validacion();
         }
-        if (contrase.equals("")){
+       else if (contrase.equals("")){
             validacion();
         }
-        if(t1==false || t2 ==false)
+      else  if(t1==false && t2 ==false)
         {
             Toast.makeText(this,"Falta-Tipo",Toast.LENGTH_LONG).show();
         }
-        if(t1==true && t2==true){
+      else  if(t1==true && t2==true){
             Toast.makeText(this,"Solo-Tipo",Toast.LENGTH_LONG).show();
 
         }
         else {
 
-            Persona P = new Persona();
-            P.setId(UUID.randomUUID().toString());
-            P.setNombre(nom);
-            P.setCorreo(cor);
-            P.setApellido(Ape);
-            P.setContraseña(contrase);
-            if(t1)
+    mAuth.createUserWithEmailAndPassword(cor,contrase).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        @Override
+        public void onComplete(@NonNull Task<AuthResult> task) {
+            if(task.isSuccessful())
             {
-                P.setTipo(t1);
+                String id = mAuth.getCurrentUser().getUid();
+                Map<String,Object> map = new HashMap<>();
+
+                map.put("Nombre",nom);
+                map.put("Correo",cor);
+                map.put("Apellido",Ape);
+                map.put("Contrasenia",contrase);
+                if(t1)
+                {
+                    map.put("tipo",true);
+                }
+                if(t2)
+                {
+                    map.put("tipo",false);
+                }
+                myRef.child("persona").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task2) {
+                        if(task2.isSuccessful()){
+                            if(t1==true){
+                                startActivity(new Intent(CreaActivity.this,DuenoActivity.class));
+                            }
+                            if(t2==true) {
+                                startActivity(new Intent(CreaActivity.this,ClienteActivity.class));
+                            }
+                        }
+                        else
+                        {
+                            Toast.makeText(CreaActivity.this, "No se creo los datos ", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
-            if (t2)
-            {
-                P.setTipo(t2);
+            else{ Toast.makeText(CreaActivity.this, "No se pudo registrar este usuario ", Toast.LENGTH_SHORT).show();
+
             }
-            myRef.child("persona").child(P.getId()).setValue(P);
-            Toast.makeText(this, "Registrado", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, LoginActivity.class));
+        }
+    });
+
         }
     }
 
@@ -119,11 +155,12 @@ public class CreaActivity extends AppCompatActivity {
         if (cor.equals("")){
             correo.setError("Required");
         }
-        if (contrase.equals("")){
+        if (contrase.equals("")&& contrase.length()>6){
             contra.setError("Required");
         }
 
     }
+
 
 
 }

@@ -15,6 +15,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -32,9 +33,11 @@ public class ClienteActivity extends AppCompatActivity
         FrListaAlquileres.OnFragmentInteractionListener
 
         {
-
+        private FirebaseAuth mAuth ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mAuth = FirebaseAuth.getInstance(); // objeto
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cliente);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -107,8 +110,10 @@ public class ClienteActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaAlquileres()).commit();
         } else if (id == R.id.LammarDueno) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
-        } else if (id == R.id.nav_share) {
-
+        } else if (id == R.id.CerrarSeccion) {
+                mAuth.signOut();
+            startActivity(new Intent(ClienteActivity.this,LoginnActivity.class));
+            finish();
         } else if (id == R.id.nav_send) {
 
         }

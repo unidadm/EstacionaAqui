@@ -21,6 +21,10 @@
             android:id="@+id/LammarDueno"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Llamar Dueño" />
+        <item
+            android:id="@+id/CerrarSeccion"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Salir" />
 
     </group>
 
