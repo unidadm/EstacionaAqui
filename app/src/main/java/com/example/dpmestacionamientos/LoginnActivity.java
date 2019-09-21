@@ -64,14 +64,14 @@ public class LoginnActivity extends AppCompatActivity {
                                             if(dataSnapshot.exists())
                                             {
                                                 String tipo = dataSnapshot.child("tipo").getValue().toString();
-                                             //   if(tipo=="due"){
+                                                if(tipo.equals("due")){
                                                     startActivity(new Intent(LoginnActivity.this,DuenoActivity.class));
                                                     finish();
-                                              //  }
-                                              //  if(tipo=="cli") {
-                                              //      startActivity(new Intent(LoginnActivity.this,ClienteActivity.class));
-                                              //      finish();
-                                              //  }
+                                                }
+                                                else{
+                                                   startActivity(new Intent(LoginnActivity.this,ClienteActivity.class));
+                                                   finish();
+                                                }
                                             }
                                         }
 

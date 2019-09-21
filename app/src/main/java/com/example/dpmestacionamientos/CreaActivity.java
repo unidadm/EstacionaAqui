@@ -106,11 +106,11 @@ public class CreaActivity extends AppCompatActivity {
                 map.put("Contrasenia",contrase);
                 if(t1)
                 {
-                    map.put("tipo",true);
+                    map.put("tipo","due");
                 }
                 if(t2)
                 {
-                    map.put("tipo",false);
+                    map.put("tipo","cli");
                 }
                 myRef.child("persona").child(id).setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
