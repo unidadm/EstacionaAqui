@@ -1,6 +1,6 @@
-package com.example.dpmestacionamientos;
+package com.example.dpmestacionamientos.data.model;
 
-public class Estacionamiento {
+public class ModelEstacionamiento {
     private String id;
     private String idpersona;
     private String nombre;
@@ -14,16 +14,9 @@ public class Estacionamiento {
     private Double altura;
     private String tipo;
     private String ubicacion;
-    private String rutaimagen;
 
-    public Estacionamiento() {
+    public ModelEstacionamiento(){
 
-    }
-
-    public Estacionamiento(String nombre, String distrito, Double preciohora) {
-        this.nombre = nombre;
-        this.distrito = distrito;
-        this.preciohora = preciohora;
     }
 
     public String getId() {
@@ -130,11 +123,8 @@ public class Estacionamiento {
         this.ubicacion = ubicacion;
     }
 
-    public String getRutaimagen() {
-        return rutaimagen;
-    }
-
-    public void setRutaimagen(String rutaimagen) {
-        this.rutaimagen = rutaimagen;
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

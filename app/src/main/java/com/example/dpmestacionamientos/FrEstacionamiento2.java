@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import android.content.SharedPreferences;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,6 +52,7 @@ public class FrEstacionamiento2 extends Fragment {
 
     EditText editTextPrecio, editTextLargo, editTextAncho;
     Spinner spinnerTipo, spinnerUbicacion;
+    Button buttonNext;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -100,10 +103,11 @@ public class FrEstacionamiento2 extends Fragment {
         editTextAncho = view.findViewById(R.id.editTextAncho);
         spinnerTipo = view.findViewById(R.id.spinnerTipo);
         spinnerUbicacion = view.findViewById(R.id.spinnerUbicacion);
+        buttonNext = view.findViewById(R.id.buttonNext);
 
-        editTextPrecio.setText("0.00");
-        editTextLargo.setText("0.00");
-        editTextAncho.setText("0.00");
+        //editTextPrecio.setText("0.00");
+        //editTextLargo.setText("0.00");
+        //editTextAncho.setText("0.00");
 
         // Llenado del combo de Tipo y Ubicacion
         final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
@@ -131,8 +135,7 @@ public class FrEstacionamiento2 extends Fragment {
         }
 
         // Boton Grabar
-        Button button = (Button) view.findViewById(R.id.buttonSave);
-        button.setOnClickListener(new View.OnClickListener()
+        buttonNext.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -140,7 +143,7 @@ public class FrEstacionamiento2 extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacionamientos()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento3()).addToBackStack(null).commit();
                 }
             }
         });
@@ -185,41 +188,25 @@ public class FrEstacionamiento2 extends Fragment {
         {
             return false;
         }
-        // Se capturan los valores del SharedPreferences
-        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
-        String ls_name = prefs.getString("NAME", "");
-        String ls_address = prefs.getString("ADDRESS", "");
-        String ls_maps = prefs.getString("MAPS", "");
-        String ls_dist = prefs.getString("DIST", "");
-        String ls_phone = prefs.getString("PHONE", "");
 
-        Double ldbl_precio = Double.parseDouble(editTextPrecio.getText().toString());
-        Double ldbl_largo = Double.parseDouble(editTextLargo.getText().toString());
-        Double ldbl_ancho = Double.parseDouble(editTextAncho.getText().toString());
+        String ls_precio = editTextPrecio.getText().toString();
+        String ls_largo = editTextLargo.getText().toString();
+        String ls_ancho = editTextAncho.getText().toString();
         String ls_tipo = spinnerTipo.getSelectedItem().toString();
         String ls_ubicacion = spinnerUbicacion.getSelectedItem().toString();
 
-        Estacionamiento p = new Estacionamiento();
-        if(is_accion.equals("M"))
-        {
-            p.setId(is_id);
-        }
-        else {
-            p.setId(UUID.randomUUID().toString());
-        }
-        p.setNombre(ls_name);
-        p.setDireccion(ls_address);
-        p.setDirecciongooglemaps(ls_maps);
-        p.setDistrito(ls_dist);
-        p.setTelefono(ls_phone);
-        p.setPreciohora(ldbl_precio);
-        p.setLargo(ldbl_largo);
-        p.setAncho(ldbl_ancho);
-        p.setTipo(ls_tipo);
-        p.setUbicacion(ls_ubicacion);
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("PRECIO", ls_precio);
+        editor.putString("LARGO", ls_largo);
+        editor.putString("ANCHO", ls_ancho);
+        editor.putString("TIPO", ls_tipo);
+        editor.putString("UBICACION", ls_ubicacion);
+        editor.commit();
 
-        databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
-        Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
+        Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
 
         return true;
     }

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -52,6 +53,8 @@ public class FrServicio extends Fragment {
     DatabaseReference databaseReference;
 
     String is_accion, is_id;
+
+    private FirebaseAuth mAuth ;
 
     public FrServicio() {
         // Required empty public constructor
@@ -158,6 +161,9 @@ public class FrServicio extends Fragment {
         {
             return false;
         }
+        //Se obtiene el usuario autenticado
+        mAuth = FirebaseAuth.getInstance();
+        String ls_userid =   mAuth.getCurrentUser().getUid();
 
         String ls_tipo = editTextTipo.getText().toString();
         String ls_descripcion = editTextDescripcion.getText().toString();
@@ -170,6 +176,7 @@ public class FrServicio extends Fragment {
         else {
             p.setId(UUID.randomUUID().toString());
         }
+        p.setIdpersona(ls_userid);
         p.setTipo(ls_tipo);
         p.setDescripcion(ls_descripcion);
 

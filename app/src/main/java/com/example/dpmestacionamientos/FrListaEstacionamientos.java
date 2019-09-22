@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,6 +59,8 @@ public class FrListaEstacionamientos extends Fragment {
     DatabaseReference databaseReference;
 
     String is_tipo, is_distrito, is_ubicacion;
+
+    private FirebaseAuth mAuth ;
 
     public FrListaEstacionamientos() {
         // Required empty public constructor
@@ -147,6 +150,10 @@ public class FrListaEstacionamientos extends Fragment {
         is_distrito = prefs.getString("DISTRITO", "");
         is_ubicacion = prefs.getString("UBICACION", "");
 
+        //Se obtiene el usuario autenticado
+        mAuth = FirebaseAuth.getInstance();
+        String ls_userid =   mAuth.getCurrentUser().getUid();
+
         /*
         databaseReference.child("estacionamiento").addValueEventListener(new ValueEventListener() {
             @Override
@@ -165,34 +172,27 @@ public class FrListaEstacionamientos extends Fragment {
             }
         });*/
 
-        if(is_distrito.equals(""))
-        {
-            databaseReference.child("estacionamiento").addListenerForSingleValueEvent(valueEventListener);
-        }
-        else{
-            Query query = FirebaseDatabase.getInstance().getReference("estacionamiento")
-                    .orderByChild("distrito")
-                    .equalTo(is_distrito);
-
-            query.addListenerForSingleValueEvent(valueEventListener);
-        }
-
+        databaseReference.child("estacionamiento").orderByChild("idpersona").equalTo(ls_userid).addListenerForSingleValueEvent(valueEventListener);
     }
 
     ValueEventListener valueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            String ls_tipo, ls_ubicacion;
+            String ls_distrito, ls_tipo, ls_ubicacion;
 
             estacionamientoList.clear();
             for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
                 Estacionamiento p = objSnapshot.getValue(Estacionamiento.class);
 
+                ls_distrito = p.getDistrito();
                 ls_tipo = p.getTipo();
                 ls_ubicacion = p.getUbicacion();
 
-                if ((is_tipo.equals("") || is_tipo.equals(ls_tipo)) &&
-                        (is_ubicacion.equals("") || is_ubicacion.equals(ls_ubicacion))){
+                if (
+                        (is_tipo.equals("") || is_tipo.equals(ls_tipo)) &&
+                        (is_distrito.equals("") || is_distrito.equals(ls_distrito)) &&
+                        (is_ubicacion.equals("") || is_ubicacion.equals(ls_ubicacion))
+                ){
                     estacionamientoList.add(p);
                 }
 

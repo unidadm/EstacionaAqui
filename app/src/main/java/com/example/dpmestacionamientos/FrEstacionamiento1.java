@@ -217,6 +217,7 @@ public class FrEstacionamiento1 extends Fragment {
         editor.putString("DIST", ls_dist);
         editor.putString("PHONE", ls_phone);
         editor.commit();
+
         Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
         toast.show();

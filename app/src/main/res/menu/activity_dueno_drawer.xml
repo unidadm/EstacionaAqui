@@ -24,5 +24,9 @@
             android:id="@+id/nav_llamar"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Llamar" />
+        <item
+            android:id="@+id/CerrarSesion"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Cerrar Sesión" />
     </group>
 </menu>

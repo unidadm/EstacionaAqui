@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,6 +57,8 @@ public class FrListaServicios extends Fragment {
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+
+    private FirebaseAuth mAuth ;
 
     public FrListaServicios() {
         // Required empty public constructor
@@ -157,7 +160,11 @@ public class FrListaServicios extends Fragment {
     }
 
     private void listarDatos(){
-        databaseReference.child("servicio").addValueEventListener(new ValueEventListener() {
+        //Se obtiene el usuario autenticado
+        mAuth = FirebaseAuth.getInstance();
+        String ls_userid =   mAuth.getCurrentUser().getUid();
+
+        databaseReference.child("servicio").orderByChild("idpersona").equalTo(ls_userid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 servicioList.clear();

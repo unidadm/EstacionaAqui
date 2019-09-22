@@ -1,6 +1,7 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -29,6 +31,7 @@ public class DuenoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         FrEstacionamiento1.OnFragmentInteractionListener,
         FrEstacionamiento2.OnFragmentInteractionListener,
+        FrEstacionamiento3.OnFragmentInteractionListener,
         FrBusqueda.OnFragmentInteractionListener,
         FrListaEstacionamientos.OnFragmentInteractionListener,
         FrListaServicios.OnFragmentInteractionListener,
@@ -39,8 +42,11 @@ public class DuenoActivity extends AppCompatActivity
         FrListaEstacServicios.OnFragmentInteractionListener,
         FrEstacionamientoServicio.OnFragmentInteractionListener{
 
+    private FirebaseAuth mAuth ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dueno);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,6 +67,10 @@ public class DuenoActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Se obtiene el usuario autenticado
+        mAuth = FirebaseAuth.getInstance();
+        String ls_userid =   mAuth.getCurrentUser().getUid();
 
         //Se abre la búsqueda
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -125,6 +135,10 @@ public class DuenoActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).addToBackStack(null).commit();
         } else if (id == R.id.nav_llamar) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).addToBackStack(null).commit();
+        } else if (id == R.id.CerrarSesion) {
+            mAuth.signOut();
+            startActivity(new Intent(DuenoActivity.this,LoginnActivity.class));
+            finish();
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
