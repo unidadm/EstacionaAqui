@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +35,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -56,7 +62,7 @@ public class FrEstacionamiento3 extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    Button buttonSave, buttonFoto;
+    Button buttonSave, buttonFoto, buttonGaleria;
     ImageView imageEstacionamiento;
 
     FirebaseDatabase firebaseDatabase;
@@ -69,6 +75,7 @@ public class FrEstacionamiento3 extends Fragment {
     private StorageReference mStorage;
 
     private static final int GALLERY_INTENT = 1;
+    private static final int REQUEST_IMAGE_CAPTURE = 2;
 
     private ProgressDialog mProgressDialog;
 
@@ -112,6 +119,7 @@ public class FrEstacionamiento3 extends Fragment {
         // Se capturan los controles de cajas de texto
         buttonSave = view.findViewById(R.id.buttonSave);
         buttonFoto = view.findViewById(R.id.buttonFoto);
+        buttonGaleria = view.findViewById(R.id.buttonGaleria);
         imageEstacionamiento = view.findViewById(R.id.imageEstacionamiento);
         mProgressDialog = new ProgressDialog(getActivity());
 
@@ -144,16 +152,23 @@ public class FrEstacionamiento3 extends Fragment {
             }
         });
 
-        // Boton Subir Foto
-        buttonFoto.setOnClickListener(new View.OnClickListener()
+        // Boton Subir de la Galería
+        buttonGaleria.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                subirFoto();
+                subirGaleria();
             }
         });
 
+        // Boton Subir Foto
+        buttonFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                subirFoto();
+            }
+        });
 
         return view;
     }
@@ -196,7 +211,7 @@ public class FrEstacionamiento3 extends Fragment {
         });
     }
 
-    private void subirFoto(){
+    private void subirGaleria(){
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, GALLERY_INTENT);
@@ -206,16 +221,17 @@ public class FrEstacionamiento3 extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //Imagen de la Galería
         if(requestCode == GALLERY_INTENT && resultCode == RESULT_OK){
 
             mProgressDialog.setTitle("Subiendo...");
-            mProgressDialog.setMessage("Subiendo foto al Firebase");
+            mProgressDialog.setMessage("Subiendo imagen al Firebase");
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
 
             Uri uri = data.getData();
 
-            StorageReference filePath = mStorage.child("fotos").child(uri.getLastPathSegment());
+            StorageReference filePath = mStorage.child("imagenes").child(uri.getLastPathSegment());
 
             filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -234,11 +250,68 @@ public class FrEstacionamiento3 extends Fragment {
 
                             is_rutaimagen = descargarFoto.toString();
 
+                            Toast.makeText(getActivity(), "Se subió exitosamente la imagen", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+        }
+
+        //Foto de la cámara
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            mProgressDialog.setTitle("Subiendo...");
+            mProgressDialog.setMessage("Subiendo foto al Firebase");
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+            String timeStamp = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss").format(new Date());
+
+            // Creamos una referencia a la carpeta y el nombre de la imagen donde se guardara
+            StorageReference mountainImagesRef = mStorage.child("imagenes/"+timeStamp);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] datas = baos.toByteArray();
+
+            // Empezamos con la subida a Firebase
+            UploadTask uploadTask = mountainImagesRef.putBytes(datas);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Toast.makeText(getActivity(),"Hubo un error",Toast.LENGTH_SHORT);
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            mProgressDialog.dismiss();
+                            Uri descargarFoto = uri;
+
+                            Glide.with(getActivity())
+                                    .load(descargarFoto)
+                                    .fitCenter()
+                                    .centerCrop()
+                                    .into(imageEstacionamiento);
+
+                            is_rutaimagen = descargarFoto.toString();
+
                             Toast.makeText(getActivity(), "Se subió exitosamente la foto", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             });
+        }
+    }
+
+    private void subirFoto(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -283,6 +356,16 @@ public class FrEstacionamiento3 extends Fragment {
 
         databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
         Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();
+
+        ///////////////////////////////
+        /*Alquiler q = new Alquiler();
+        q.setId(UUID.randomUUID().toString());
+        q.setFechainiciostring("23/09/2019");
+        q.setFechainiciointeger(20190923);
+        q.setFechafinstring("24/09/2019");
+        q.setFechafininteger(20190924);
+        databaseReference.child("alquiler").child(q.getId()).setValue(q);*/
+        ///////////////////////////////
 
         return true;
     }

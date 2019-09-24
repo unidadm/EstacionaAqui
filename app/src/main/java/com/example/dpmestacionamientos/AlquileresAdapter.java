@@ -41,7 +41,7 @@ public class AlquileresAdapter extends
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Alquiler alquiler = alquileresList.get(position);
         holder.estacionamiento.setText(alquiler.getEstacionamiento());
-        holder.fechahora.setText(alquiler.getFechahora());
+        holder.fechahora.setText(alquiler.getFechainiciostring());
     }
 
     @Override

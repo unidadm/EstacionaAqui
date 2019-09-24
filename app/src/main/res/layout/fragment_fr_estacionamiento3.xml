@@ -13,6 +13,12 @@
         android:layout_height="wrap_content"
         android:text="Subir Foto"/>
 
+    <Button
+        android:id="@+id/buttonGaleria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escoger Imagen de la Galería"/>
+
     <ImageView
         android:id="@+id/imageEstacionamiento"
         android:layout_width="match_parent"

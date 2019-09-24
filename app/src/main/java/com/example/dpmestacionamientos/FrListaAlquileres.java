@@ -1,9 +1,11 @@
 package com.example.dpmestacionamientos;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,6 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +51,14 @@ public class FrListaAlquileres extends Fragment {
     private List<Alquiler> alquilerList = new ArrayList<>();
     private RecyclerView recyclerView;
     private AlquileresAdapter mAdapter;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+
+    String is_distrito, is_estacionamiento;
+    Integer ii_fechainicio, ii_fechafin;
+
+    private FirebaseAuth mAuth ;
 
     public FrListaAlquileres() {
         // Required empty public constructor
@@ -90,10 +108,91 @@ public class FrListaAlquileres extends Fragment {
 
         recyclerView.setAdapter(mAdapter);
 
-        prepareAlquilerData();
+        // Se inicializa Firebase
+        inicializarFirebase();
+
+        listarDatos();
+        //prepareAlquilerData();
 
         return view;
     }
+
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+    }
+
+    private void listarDatos(){
+        String ls_anno, ls_mes, ls_dia;
+
+        // Se capturan los valores del SharedPreferences
+        SharedPreferences prefs = getActivity().getSharedPreferences("FILTROS", Context.MODE_PRIVATE);
+        String ls_fechainicio = prefs.getString("FECHAINICIO", "");
+        String ls_fechafin = prefs.getString("FECHAFIN", "");
+        is_distrito = prefs.getString("DISTRITO", "");
+        is_estacionamiento = prefs.getString("ESTACIONAMIENTO", "");
+
+        if (ls_fechainicio.equals("")){
+            ii_fechainicio = 0;
+        }else{
+            ls_dia = ls_fechainicio.substring(0, 2);
+            ls_mes = ls_fechainicio.substring(3, 5);
+            ls_anno = ls_fechainicio.substring(6, 10);
+
+            ii_fechainicio = (Integer.parseInt(ls_anno) * 10000) + (Integer.parseInt(ls_mes) * 100) + (Integer.parseInt(ls_dia));
+        }
+
+        if (ls_fechafin.equals("")){
+            ii_fechafin = 0;
+        }else{
+            ls_dia = ls_fechafin.substring(0, 2);
+            ls_mes = ls_fechafin.substring(3, 5);
+            ls_anno = ls_fechafin.substring(6, 10);
+
+            ii_fechafin = (Integer.parseInt(ls_anno) * 10000) + (Integer.parseInt(ls_mes) * 100) + (Integer.parseInt(ls_dia));
+        }
+
+        //Se obtiene el usuario autenticado
+        mAuth = FirebaseAuth.getInstance();
+        String ls_userid =   mAuth.getCurrentUser().getUid();
+
+        databaseReference.child("alquiler").orderByChild("idpersonadueno").equalTo(ls_userid).addListenerForSingleValueEvent(valueEventListener);
+    }
+
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            String ls_distrito, ls_estacionamiento;
+            Integer li_fechainicio;
+
+            alquilerList.clear();
+            for (DataSnapshot objSnapshot : dataSnapshot.getChildren()){
+                Alquiler p = objSnapshot.getValue(Alquiler.class);
+
+                ls_estacionamiento = p.getEstacionamiento();
+                ls_distrito = p.getDistrito();
+                li_fechainicio = p.getFechainiciointeger();
+
+                if (
+                        (is_distrito.equals("") || is_distrito.equals(ls_distrito)) &&
+                                (is_estacionamiento.equals("") || is_estacionamiento.equals(ls_estacionamiento)) &&
+                                (ii_fechainicio.equals(0) || li_fechainicio >= ii_fechainicio) &&
+                                (ii_fechafin.equals(0) || li_fechainicio <= ii_fechafin)
+
+                ){
+                    alquilerList.add(p);
+                }
+
+            }
+            mAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
 
     private void prepareAlquilerData() {
         Alquiler alquiler = new Alquiler("Estacionamiento Don Pedrito", "10/08/2019 08:00 a.m.");
