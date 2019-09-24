@@ -54,7 +54,7 @@ public class FrEstacionamiento1 extends Fragment {
 
     EditText editTextName, editTextAddress, editTextMaps, editTextPhone;
     Spinner spinnerDistrito;
-    Button buttonNext, buttonServicios;
+    Button buttonNext, buttonServicios, buttonMaps;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -106,6 +106,7 @@ public class FrEstacionamiento1 extends Fragment {
         editTextPhone = view.findViewById(R.id.editTextPhone);
         buttonNext = view.findViewById(R.id.buttonNext);
         buttonServicios = view.findViewById(R.id.buttonServicios);
+        buttonMaps = view.findViewById(R.id.buttonMaps);
 
         // Llenado del combo de Distrito
         final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
@@ -152,6 +153,17 @@ public class FrEstacionamiento1 extends Fragment {
             {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacServicios()).addToBackStack(null).commit();
+            }
+        });
+
+        // Botón Mapa
+        buttonMaps.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento4()).addToBackStack(null).commit();
             }
         });
 

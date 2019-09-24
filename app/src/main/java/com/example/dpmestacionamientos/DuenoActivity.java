@@ -32,6 +32,7 @@ public class DuenoActivity extends AppCompatActivity
         FrEstacionamiento1.OnFragmentInteractionListener,
         FrEstacionamiento2.OnFragmentInteractionListener,
         FrEstacionamiento3.OnFragmentInteractionListener,
+        FrEstacionamiento4.OnFragmentInteractionListener,
         FrBusqueda.OnFragmentInteractionListener,
         FrListaEstacionamientos.OnFragmentInteractionListener,
         FrListaServicios.OnFragmentInteractionListener,
@@ -40,7 +41,8 @@ public class DuenoActivity extends AppCompatActivity
         FrBusquedaAlquileres.OnFragmentInteractionListener,
         FrListaAlquileres.OnFragmentInteractionListener,
         FrListaEstacServicios.OnFragmentInteractionListener,
-        FrEstacionamientoServicio.OnFragmentInteractionListener{
+        FrEstacionamientoServicio.OnFragmentInteractionListener,
+        FrEditar_Perfil.OnFragmentInteractionListener{
 
     private FirebaseAuth mAuth ;
 
@@ -135,6 +137,8 @@ public class DuenoActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).addToBackStack(null).commit();
         } else if (id == R.id.nav_llamar) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).addToBackStack(null).commit();
+        } else if (id == R.id.editar_perfil) {
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
         } else if (id == R.id.CerrarSesion) {
             mAuth.signOut();
             startActivity(new Intent(DuenoActivity.this,LoginnActivity.class));

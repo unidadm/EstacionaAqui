@@ -92,4 +92,10 @@
         android:layout_height="wrap_content"
         android:text="Servicios Adicionales"/>
 
+    <Button
+        android:id="@+id/buttonMaps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mapa"/>
+
 </LinearLayout>
