@@ -5,7 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".FrEditar_Perfil">
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:text="Ingrese Correo" />
 
+    <EditText
+        android:id="@+id/etNewCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:ems="10"
+        android:hint="Ingrese su Correo"
+        android:inputType="textPersonName" />
     <TextView
         android:id="@+id/textView10"
         android:layout_width="match_parent"
@@ -13,7 +25,7 @@
         android:text="Cambia Tu nombre" />
 
     <EditText
-        android:id="@+id/et_NewName"
+        android:id="@+id/et_NewName1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -24,73 +36,46 @@
         android:id="@+id/textView12"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ap. Paterno"  />
+        android:text="Apellido"  />
 
     <EditText
-        android:id="@+id/et_NewAP"
+        android:id="@+id/et_NewApe"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:hint="Cambia tu Ap. Paterno"/>
+        android:hint="Cambia tu Apellido"/>
 
     <TextView
         android:id="@+id/dd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ap.Materno" />
+        android:text="Contraseña" />
 
     <EditText
-        android:id="@+id/et_NewAM"
+        android:id="@+id/et_Newcontra"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Cambia tu Ap. Materno"/>
-
-    <TextView
-        android:id="@+id/textView14"
+        android:inputType="textPassword"
+        android:hint="Cambia tu contraseña"/>
+    <RadioButton
+        android:id="@+id/newDueño"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Cambia tu Celular" />
+        android:layout_height="43dp"
+        android:text="Dueño" />
 
-    <EditText
-        android:id="@+id/ff"
+    <RadioButton
+        android:id="@+id/newCliente"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:text="Cambia tu Celular"/>
-
-    <TextView
-        android:id="@+id/et_NewPhone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Distrito"  />
-
-    <EditText
-        android:id="@+id/editText5"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Cambia tu Distrito" />
-
-    <TextView
-        android:id="@+id/textView16"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Contraseña"  />
-
-    <EditText
-        android:id="@+id/et_NewContra"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Cambia tu Contraseña" />
+        android:layout_height="52dp"
+        android:text="Cliente" />
 
     <Button
         android:id="@+id/btn_Edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:text="Confirmar Cambio" />
+
 </LinearLayout>
