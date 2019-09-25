@@ -27,11 +27,14 @@ import android.view.Menu;
 
 public class ClienteActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        FrBusquedaAlquileres.OnFragmentInteractionListener,FrEditar_Perfil.OnFragmentInteractionListener,
-            FrListaEstacionamientos.OnFragmentInteractionListener,
+        FrBusquedaAlquileres.OnFragmentInteractionListener,
+        FrEditar_Perfil.OnFragmentInteractionListener,
+        FrListaEstacionamientos.OnFragmentInteractionListener,
         FrLlamarDueno.OnFragmentInteractionListener,
-        FrListaAlquileres.OnFragmentInteractionListener
-
+        FrListaAlquileres.OnFragmentInteractionListener,
+        FrCliBusqueda.OnFragmentInteractionListener,
+        FrCliListaEstacionamientos.OnFragmentInteractionListener,
+        FrAlquiler.OnFragmentInteractionListener
         {
         private FirebaseAuth mAuth ;
     @Override
@@ -105,9 +108,9 @@ public class ClienteActivity extends AppCompatActivity
         } else if (id == R.id.editar_perfil) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
         } else if (id == R.id.Buscar_Estacionamiento) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusquedaAlquileres()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliBusqueda()).commit();
         } else if (id == R.id.Lst_Estacionamiento) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaAlquileres()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
         } else if (id == R.id.LammarDueno) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
         } else if (id == R.id.CerrarSeccion) {
