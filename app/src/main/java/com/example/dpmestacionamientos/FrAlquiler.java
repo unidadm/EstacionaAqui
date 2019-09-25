@@ -2,6 +2,7 @@ package com.example.dpmestacionamientos;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -140,6 +141,20 @@ public class FrAlquiler extends Fragment {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).addToBackStack(null).commit();
                 }
+            }
+        });
+
+        // Boton Llamar
+        Button buttoncall = (Button) view.findViewById(R.id.buttonCall);
+        buttoncall.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:"+editTextPhone.getText().toString()));
+                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(callIntent);
             }
         });
 

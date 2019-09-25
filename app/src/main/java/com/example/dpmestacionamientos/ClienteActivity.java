@@ -61,6 +61,10 @@ public class ClienteActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        //Se abre la búsqueda
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliBusqueda()).commit();
     }
 
     @Override
