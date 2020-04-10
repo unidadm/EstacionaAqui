@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_number": "19523267427",
-    "firebase_url": "https://appestacionamiento-eb1b6.firebaseio.com",
-    "project_id": "appestacionamiento-eb1b6",
-    "storage_bucket": "appestacionamiento-eb1b6.appspot.com"
+    "project_number": "872410451049",
+    "firebase_url": "https://estacionaaqui-769e3.firebaseio.com",
+    "project_id": "estacionaaqui-769e3",
+    "storage_bucket": "estacionaaqui-769e3.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:19523267427:android:fb5f478b4d1142bb0f4156",
+        "mobilesdk_app_id": "1:872410451049:android:618026cbfa14ee7d4626f8",
         "android_client_info": {
-          "package_name": "com.example.dpmestacionamientos"
+          "package_name": "com.example.estacionaaqui"
         }
       },
       "oauth_client": [
         {
-          "client_id": "19523267427-7v32959d8h3f8lsvk91jarsbtufaqtau.apps.googleusercontent.com",
+          "client_id": "872410451049-94kppvgs36tnaia44ocqi4apnabq6s14.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.dpmestacionamientos",
-            "certificate_hash": "ecb73898db94387f2ff63ba340dafa1b1e3a7a91"
+            "package_name": "com.example.estacionaaqui",
+            "certificate_hash": "e8731498e7fae0485976184f3e232f55fd96a156"
           }
         },
         {
-          "client_id": "19523267427-p2kvgk2407o52rvk7qtkij7nko0e8uaa.apps.googleusercontent.com",
+          "client_id": "872410451049-hba04825cg1v6k98g3s4iouol4kjvk3j.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyABd5ISTZcqrz5w9p0-Zvf23pBpXEfoR6s"
+          "current_key": "AIzaSyC9xX4hmOhng1OASWtaE8d3yxJVjaH8q7I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "19523267427-p2kvgk2407o52rvk7qtkij7nko0e8uaa.apps.googleusercontent.com",
+              "client_id": "872410451049-hba04825cg1v6k98g3s4iouol4kjvk3j.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

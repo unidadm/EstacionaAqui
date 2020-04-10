@@ -20,6 +20,7 @@
         android:ems="10"
         android:hint="Ingrese su Nombre"
         android:inputType="textPersonName" />
+
     <TextView
         android:id="@+id/textView6"
         android:layout_width="match_parent"
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Ingrese su apellido"/>
+
     <TextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
@@ -60,19 +62,24 @@
         android:inputType="textPassword"
         android:hint="Ingrese su contraseña"/>
 
-
-
-    <RadioButton
-        android:id="@+id/rbDueño"
+    <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="43dp"
-        android:text="Dueño" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <RadioButton
-        android:id="@+id/rbCliente"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:text="Cliente" />
+        <RadioButton
+            android:id="@+id/rbCliente"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Cliente"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/rbDueño"
+            android:layout_width="match_parent"
+            android:layout_height="43dp"
+            android:text="Dueño" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/btnCrear"
