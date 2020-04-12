@@ -124,7 +124,8 @@ public class DuenoActivity extends AppCompatActivity
             editor.commit();
 
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento1()).addToBackStack(null).commit();
-        } else if (id == R.id.nav_busqueda) {
+        }
+       /* else if (id == R.id.nav_busqueda) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrBusqueda()).addToBackStack(null).commit();
         } else if (id == R.id.nav_servicios) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaServicios()).addToBackStack(null).commit();
@@ -134,7 +135,8 @@ public class DuenoActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).addToBackStack(null).commit();
         } else if (id == R.id.editar_perfil) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
-        } else if (id == R.id.CerrarSesion) {
+        } */
+        else if (id == R.id.CerrarSesion) {
             mAuth.signOut();
             startActivity(new Intent(DuenoActivity.this,LoginnActivity.class));
             finish();

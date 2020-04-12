@@ -8,7 +8,7 @@
             android:id="@+id/nav_new_estacionamiento"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Agregar Estacionamiento" />
-        <item
+        <!--<item
             android:id="@+id/nav_busqueda"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Editar Estacionamiento" />
@@ -27,7 +27,8 @@
         <item
             android:id="@+id/editar_perfil"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Editar Perfil" />
+            android:title="Editar Perfil" />-->
+
         <item
             android:id="@+id/CerrarSesion"
             android:icon="@drawable/ic_menu_gallery"
