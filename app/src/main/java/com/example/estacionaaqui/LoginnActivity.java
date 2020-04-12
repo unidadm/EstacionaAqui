@@ -30,6 +30,7 @@ public class LoginnActivity extends AppCompatActivity {
     private EditText etCorreo, etContraseña;
     private Button nbtn;
 
+
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
@@ -43,6 +44,7 @@ public class LoginnActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        
 
             nbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
