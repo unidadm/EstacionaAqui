@@ -44,8 +44,7 @@ public class LoginnActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
-
+        
             nbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
