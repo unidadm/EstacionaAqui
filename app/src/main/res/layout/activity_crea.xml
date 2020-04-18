@@ -11,7 +11,7 @@
         android:id="@+id/twName"
         android:layout_width="match_parent"
         android:layout_height="35dp"
-        android:text="Ingrese Nombre" />
+        android:text="Nombres" />
 
     <EditText
         android:id="@+id/etName"
@@ -19,13 +19,14 @@
         android:layout_height="59dp"
         android:ems="10"
         android:hint="Ingrese su Nombre"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:maxLength="50"/>
 
     <TextView
         android:id="@+id/textView6"
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:text="Ingrese apellido" />
+        android:text="Apellidos" />
 
     <EditText
         android:id="@+id/etapellido"
@@ -38,7 +39,7 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="36dp"
-        android:text="Ingrese Correo" />
+        android:text="E-mail" />
 
     <EditText
         android:id="@+id/etCorreo"
@@ -46,13 +47,14 @@
         android:layout_height="55dp"
         android:ems="10"
         android:hint="Ingrese su Correo"
-        android:inputType="textPersonName" />
+        android:inputType="textPersonName"
+        android:maxLength="50"/>
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="match_parent"
         android:layout_height="38dp"
-        android:text="Ingrese Contraseña" />
+        android:text="Contraseña" />
 
     <EditText
         android:id="@+id/etContraseña"
@@ -60,9 +62,10 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword"
-        android:hint="Ingrese su contraseña"/>
+        android:hint="Ingrese su contraseña"
+        android:maxLength="20" />
 
-    <RadioGroup
+   <!-- <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -79,7 +82,20 @@
             android:layout_width="match_parent"
             android:layout_height="43dp"
             android:text="Dueño" />
-    </RadioGroup>
+    </RadioGroup>-->
+
+    <CheckBox
+        android:id="@+id/ckbDueno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dueño">
+    </CheckBox>
+    <CheckBox
+        android:id="@+id/ckbCliente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cliente">
+    </CheckBox>
 
     <Button
         android:id="@+id/btnCrear"
