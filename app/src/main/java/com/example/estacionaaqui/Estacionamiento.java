@@ -15,6 +15,8 @@ public class Estacionamiento {
     private String tipo;
     private String ubicacion;
     private String rutaimagen;
+    private double latitud;
+    private double longitud;
 
     public Estacionamiento() {
 
@@ -136,5 +138,21 @@ public class Estacionamiento {
 
     public void setRutaimagen(String rutaimagen) {
         this.rutaimagen = rutaimagen;
+    }
+
+    public double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(double latitud) {
+        this.latitud = latitud;
+    }
+
+    public double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(double longitud) {
+        this.longitud = longitud;
     }
 }

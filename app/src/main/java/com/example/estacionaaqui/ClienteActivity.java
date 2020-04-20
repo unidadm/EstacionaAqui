@@ -112,7 +112,7 @@ public class ClienteActivity extends AppCompatActivity
         } else if (id == R.id.editar_perfil) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
         } else if (id == R.id.Buscar_Estacionamiento) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliBusqueda()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new MapEstacionamientoActivity()).commit();
         } else if (id == R.id.Lst_Estacionamiento) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
         } else if (id == R.id.LammarDueno) {

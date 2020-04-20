@@ -1,6 +1,7 @@
 package com.example.estacionaaqui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,7 @@ public class FrCliBusqueda extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private Button mbtnMaps;
 
     Spinner comboTipos, comboDistritos, comboUbicaciones;
 
@@ -74,6 +77,15 @@ public class FrCliBusqueda extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_cli_busqueda, container, false);
+
+        //Boton Maps
+        mbtnMaps = view.findViewById(R.id.btnMaps);
+        mbtnMaps.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                startActivity(new Intent(getActivity(),FrListaEstacionamientos.class));
+            }
+        });
 
         final String[] tipos = new String[] {"", "Exterior", "Interior", "Aire Libre" };
         final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
