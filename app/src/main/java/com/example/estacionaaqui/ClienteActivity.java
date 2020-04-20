@@ -117,7 +117,8 @@ public class ClienteActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
         } else if (id == R.id.LammarDueno) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
-        } else if (id == R.id.CerrarSeccion) {
+        } 
+        else if (id == R.id.CerrarSeccion) {
                 mAuth.signOut();
             startActivity(new Intent(ClienteActivity.this,LoginnActivity.class));
             finish();
