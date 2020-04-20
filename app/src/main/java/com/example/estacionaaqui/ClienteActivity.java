@@ -111,13 +111,15 @@ public class ClienteActivity extends AppCompatActivity
             // Handle the camera action
         } else if (id == R.id.editar_perfil) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEditar_Perfil()).commit();
-        } else if (id == R.id.Buscar_Estacionamiento) {
+        }
+        /*else if (id == R.id.Buscar_Estacionamiento) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliBusqueda()).commit();
         } else if (id == R.id.Lst_Estacionamiento) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
         } else if (id == R.id.LammarDueno) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
-        } else if (id == R.id.CerrarSeccion) {
+        } */
+        else if (id == R.id.CerrarSeccion) {
                 mAuth.signOut();
             startActivity(new Intent(ClienteActivity.this,LoginnActivity.class));
             finish();

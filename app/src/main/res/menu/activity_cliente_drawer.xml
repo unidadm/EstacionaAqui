@@ -8,7 +8,8 @@
             android:id="@+id/editar_perfil"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Editar Perfil" />
-        <item
+
+<!--        <item
             android:id="@+id/Buscar_Estacionamiento"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Buscar Estacionamiento" />
@@ -20,7 +21,7 @@
         <item
             android:id="@+id/LammarDueno"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Llamar Dueño" />
+            android:title="Llamar Dueño" />-->
         <item
             android:id="@+id/CerrarSeccion"
             android:icon="@drawable/ic_menu_gallery"
@@ -28,7 +29,7 @@
 
     </group>
 
-    <item android:title="Communicate">
+ <!--   <item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -39,6 +40,6 @@
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/menu_send" />
         </menu>
-    </item>
+    </item>-->
 
 </menu>

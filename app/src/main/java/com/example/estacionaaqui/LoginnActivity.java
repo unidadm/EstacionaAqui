@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,86 +22,101 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class LoginnActivity extends AppCompatActivity {
-    public void Registar_New(View view)
-    {
+    public void Registar_New(View view) {
 
         startActivity(new Intent(this, CreaActivity.class));
 
     }
+
     private EditText etCorreo, etContraseña;
+    private RadioButton rbDue, rbCli;
+
     private Button nbtn;
 
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loginn);
-        etCorreo= findViewById(R.id.username);
-        etContraseña= findViewById(R.id.password);
-            nbtn =findViewById(R.id.login);
+        etCorreo = findViewById(R.id.username);
+        etContraseña = findViewById(R.id.password);
+        rbDue = findViewById(R.id.rbLoginDueno);
+        rbCli = findViewById(R.id.rbLoginCliente);
+
+        nbtn = findViewById(R.id.login);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-            nbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                     String Correo = etCorreo.getText().toString();
-                     String Contraseña = etContraseña.getText().toString();
+        nbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String Correo = etCorreo.getText().toString();
+                String Contraseña = etContraseña.getText().toString();
 
-                    if(!Correo.isEmpty() && !Contraseña.isEmpty())
-                    {
-                        mAuth.signInWithEmailAndPassword(Correo,Contraseña).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if(task.isSuccessful())
-                                {
-                                    String id =   mAuth.getCurrentUser().getUid();
-                                    mDatabase.child("persona").child(id).addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.exists())
-                                            {
-                                                String tipo = dataSnapshot.child("tipo").getValue().toString();
-                                                if(tipo.equals("due")){
-                                                    startActivity(new Intent(LoginnActivity.this,DuenoActivity.class));
+                if (!Correo.isEmpty() && !Contraseña.isEmpty()) {
+                    mAuth.signInWithEmailAndPassword(Correo, Contraseña).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                String id = mAuth.getCurrentUser().getUid();
+                                mDatabase.child("persona").child(id).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            String tipo = dataSnapshot.child("tipo").getValue().toString();
+
+                                            if (tipo.equals("cd")) {
+                                                //Ambos
+                                                if (rbDue.isChecked()) {
+                                                    startActivity(new Intent(LoginnActivity.this, DuenoActivity.class));
+                                                    finish();
+                                                } else if (rbCli.isChecked()) {
+                                                    startActivity(new Intent(LoginnActivity.this, ClienteActivity.class));
                                                     finish();
                                                 }
-                                                else{
-                                                   startActivity(new Intent(LoginnActivity.this,ClienteActivity.class));
-                                                   finish();
+
+                                            } else if (tipo.equals("due")) {
+                                                //Dueno
+
+                                                if (rbDue.isChecked()) {
+                                                    startActivity(new Intent(LoginnActivity.this, DuenoActivity.class));
+                                                    finish();
                                                 }
+                                            } else if (tipo.equals("cli")) {
+                                                //Cliente
+                                                if (rbCli.isChecked()) {
+                                                    startActivity(new Intent(LoginnActivity.this, ClienteActivity.class));
+                                                    finish();
+                                                }
+                                            } else {
+                                                Toast.makeText(LoginnActivity.this, "Ud. no pertenece al tipo seleccionado", Toast.LENGTH_SHORT).show();
                                             }
                                         }
+                                    }
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        }
-                                    });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    }
+                                });
 
 
-                                }
-                                else
-                                {
-                                    Toast.makeText(LoginnActivity.this, "No se pudo iniciar seccion", Toast.LENGTH_SHORT).show();
-                                }
+                            } else {
+                                Toast.makeText(LoginnActivity.this, "No se pudo iniciar seccion", Toast.LENGTH_SHORT).show();
                             }
-                        });
-                    }
-                    else
-                    {
-                        Toast.makeText(LoginnActivity.this, "Complete los campos", Toast.LENGTH_SHORT).show();
-                    }
+                        }
+                    });
+                } else {
+                    Toast.makeText(LoginnActivity.this, "Por favor, complete los campos", Toast.LENGTH_SHORT).show();
                 }
-            });
+            }
+        });
 
     }
-
-
-
 
 
 }
