@@ -114,7 +114,7 @@ public class ClienteActivity extends AppCompatActivity
         } else if (id == R.id.Buscar_Estacionamiento) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new MapEstacionamientoActivity()).commit();
         } else if (id == R.id.Lst_Estacionamiento) {
-            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
+            fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliBusqueda()).commit();
         } else if (id == R.id.LammarDueno) {
             fragmentManager.beginTransaction().replace(R.id.contenedor, new FrLlamarDueno()).commit();
         } 

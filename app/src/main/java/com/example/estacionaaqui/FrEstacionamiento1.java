@@ -51,12 +51,12 @@ public class FrEstacionamiento1 extends Fragment {
 
     EditText editTextName, editTextAddress, editTextMaps, editTextPhone;
     Spinner spinnerDistrito;
-    Button buttonNext, buttonServicios, buttonMaps;
+    Button buttonNext, buttonServicios;
 
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
 
-    String is_accion;
+    String is_accion, is_latitud, is_longitud;
 
     public FrEstacionamiento1() {
         // Required empty public constructor
@@ -98,12 +98,11 @@ public class FrEstacionamiento1 extends Fragment {
         // Se capturan los controles de cajas de texto
         editTextName = view.findViewById(R.id.editTextName);
         editTextAddress = view.findViewById(R.id.editTextAddress);
-        editTextMaps = view.findViewById(R.id.editTextMaps);
+        //editTextMaps = view.findViewById(R.id.editTextMaps);
         spinnerDistrito = view.findViewById(R.id.spinnerDistrito);
         editTextPhone = view.findViewById(R.id.editTextPhone);
         buttonNext = view.findViewById(R.id.buttonNext);
         buttonServicios = view.findViewById(R.id.buttonServicios);
-        buttonMaps = view.findViewById(R.id.buttonMaps);
 
         // Llenado del combo de Distrito
         final String[] distritos = new String[] {"", "Barranco", "La Molina", "La Victoria", "Lima", "San Miguel", "Surco" };
@@ -119,6 +118,8 @@ public class FrEstacionamiento1 extends Fragment {
         // Se leen los parámetros
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
         is_accion = prefs.getString("ACCION", "");
+        is_latitud = "0.0";
+        is_longitud = "0.0";
 
         if(is_accion.equals("M"))
         {
@@ -137,7 +138,7 @@ public class FrEstacionamiento1 extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento4()).addToBackStack(null).commit();
                 }
             }
         });
@@ -150,17 +151,6 @@ public class FrEstacionamiento1 extends Fragment {
             {
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.contenedor, new FrListaEstacServicios()).addToBackStack(null).commit();
-            }
-        });
-
-        // Botón Mapa
-        buttonMaps.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento4()).addToBackStack(null).commit();
             }
         });
 
@@ -186,7 +176,9 @@ public class FrEstacionamiento1 extends Fragment {
 
                     editTextName.setText(p.getNombre());
                     editTextAddress.setText(p.getDireccion());
-                    editTextMaps.setText(p.getDirecciongooglemaps());
+                    //editTextMaps.setText(p.getDirecciongooglemaps());
+                    is_latitud = p.getLatitud().toString();
+                    is_longitud = p.getLongitud().toString();
                     spinnerDistrito.setSelection(((ArrayAdapter)spinnerDistrito.getAdapter()).getPosition(p.getDistrito()));
                     editTextPhone.setText(p.getTelefono());
 
@@ -214,7 +206,7 @@ public class FrEstacionamiento1 extends Fragment {
 
         String ls_name = editTextName.getText().toString();
         String ls_address = editTextAddress.getText().toString();
-        String ls_maps = editTextMaps.getText().toString();
+        String ls_maps = "";//editTextMaps.getText().toString();
         String ls_dist = spinnerDistrito.getSelectedItem().toString();
         String ls_phone = editTextPhone.getText().toString();
 
@@ -223,6 +215,8 @@ public class FrEstacionamiento1 extends Fragment {
         editor.putString("NAME", ls_name);
         editor.putString("ADDRESS", ls_address);
         editor.putString("MAPS", ls_maps);
+        editor.putString("LATITUD", is_latitud);
+        editor.putString("LONGITUD", is_longitud);
         editor.putString("DIST", ls_dist);
         editor.putString("PHONE", ls_phone);
         editor.commit();

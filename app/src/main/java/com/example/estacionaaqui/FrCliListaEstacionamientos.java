@@ -117,6 +117,7 @@ public class FrCliListaEstacionamientos extends Fragment {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString("ACCION", "M");
                 editor.putString("ID", estacionamientoList.get(recyclerView.getChildAdapterPosition(view)).getId());
+                editor.putString("ORIGEN", "LISTA");
                 editor.commit();
 
                 Toast.makeText(getActivity(), "Selección:" + estacionamientoList.get(recyclerView.getChildAdapterPosition(view)).getNombre(), Toast.LENGTH_LONG).show();

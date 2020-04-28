@@ -331,6 +331,8 @@ public class FrEstacionamiento3 extends Fragment {
         Double ldbl_ancho = Double.parseDouble(prefs.getString("ANCHO", ""));
         String ls_tipo = prefs.getString("TIPO", "");
         String ls_ubicacion = prefs.getString("UBICACION", "");
+        Double ldbl_latitud = Double.parseDouble(prefs.getString("LATITUD", ""));
+        Double ldbl_longitud = Double.parseDouble(prefs.getString("LONGITUD", ""));
 
         Estacionamiento p = new Estacionamiento();
         if(is_accion.equals("M"))
@@ -352,6 +354,8 @@ public class FrEstacionamiento3 extends Fragment {
         p.setTipo(ls_tipo);
         p.setUbicacion(ls_ubicacion);
         p.setRutaimagen(is_rutaimagen);
+        p.setLatitud(ldbl_latitud);
+        p.setLongitud(ldbl_longitud);
 
         databaseReference.child("estacionamiento").child(p.getId()).setValue(p);
         Toast.makeText(getActivity(), "Datos grabados", Toast.LENGTH_LONG).show();

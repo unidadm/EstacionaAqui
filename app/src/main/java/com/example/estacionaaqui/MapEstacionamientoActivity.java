@@ -63,6 +63,7 @@ public class MapEstacionamientoActivity extends Fragment implements OnMapReadyCa
         //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         googleMap.getUiSettings().setZoomControlsEnabled(true);
+        googleMap.setTrafficEnabled(true);
 
         mDatabase.child("estacionamiento").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -101,6 +102,34 @@ public class MapEstacionamientoActivity extends Fragment implements OnMapReadyCa
 
         //Click en el marcador
         googleMap.setOnMarkerClickListener(this);
+
+        //Click largo en el mapa. Se comentó porque esta funcionalidad va en otro lado, pero se puede
+        //descomentar para pruebas
+        /*googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+
+                // Creating a marker
+                MarkerOptions markerOptions = new MarkerOptions();
+
+                // Setting the position for the marker
+                markerOptions.position(latLng);
+
+                // Setting the title for the marker.
+                // This will be displayed on taping the marker
+                markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+
+                // Clears the previously touched position
+                googleMap.clear();
+
+                // Animating to the touched position
+                googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                // Placing a marker on the touched position
+                googleMap.addMarker(markerOptions);
+            }
+        });*/
     }
 
 
@@ -118,6 +147,7 @@ public class MapEstacionamientoActivity extends Fragment implements OnMapReadyCa
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("ACCION", "M");
             editor.putString("ID", ls_id);
+            editor.putString("ORIGEN", "MAPA");
             editor.commit();
 
             Toast.makeText(getActivity(), "Selección:" + marker.getTitle(), Toast.LENGTH_LONG).show();
@@ -132,4 +162,5 @@ public class MapEstacionamientoActivity extends Fragment implements OnMapReadyCa
 
         return false;
     }
+
 }

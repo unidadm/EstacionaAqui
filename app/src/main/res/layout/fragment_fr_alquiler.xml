@@ -22,6 +22,34 @@
         android:focusable="false" />
 
     <TextView
+        android:id="@+id/textViewPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Precio por Hora" />
+
+    <EditText
+        android:id="@+id/editTextPrecio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:focusable="false" />
+
+    <TextView
+        android:id="@+id/textViewAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dirección" />
+
+    <EditText
+        android:id="@+id/editTextAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:focusable="false" />
+
+    <TextView
         android:id="@+id/textViewDist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +95,7 @@
         android:id="@+id/buttonSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Guardar"/>
+        android:text="Reservar"/>
 
     <Button
         android:id="@+id/buttonCall"

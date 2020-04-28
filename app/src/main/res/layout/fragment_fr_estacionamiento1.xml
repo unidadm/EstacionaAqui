@@ -37,7 +37,7 @@
         android:inputType="textPersonName"
         android:text="" />
 
-    <TextView
+    <!--<TextView
         android:id="@+id/textViewMaps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
         android:ems="10"
         android:hint="Ingrese Dirección Google Maps"
         android:inputType="textPersonName"
-        android:text="" />
+        android:text="" />-->
 
     <TextView
         android:id="@+id/textViewDist"
@@ -91,11 +91,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Servicios Adicionales"/>
-
-    <Button
-        android:id="@+id/buttonMaps"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Mapa"/>
 
 </LinearLayout>

@@ -44,14 +44,14 @@
             android:id="@+id/rbLoginDueno"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Dueño"
-            android:checked="true"></RadioButton>
+            android:text="Dueño"></RadioButton>
 
         <RadioButton
             android:id="@+id/rbLoginCliente"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="Cliente"></RadioButton>
+            android:text="Cliente"
+            android:checked="true"></RadioButton>
     </RadioGroup>
 
     <Button

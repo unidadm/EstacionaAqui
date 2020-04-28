@@ -1,15 +1,23 @@
 package com.example.estacionaaqui;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,7 +26,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +41,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * Use the {@link FrEstacionamiento4#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FrEstacionamiento4 extends Fragment implements OnMapReadyCallback {
+public class FrEstacionamiento4 extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -41,6 +54,13 @@ public class FrEstacionamiento4 extends Fragment implements OnMapReadyCallback {
     private OnFragmentInteractionListener mListener;
 
     SupportMapFragment mapFragment;
+    Button buttonNext;
+
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+
+    String is_accion, is_nombre, is_latitud, is_longitud;
+
     private FragmentActivity myContext;
 
     public FrEstacionamiento4() {
@@ -80,35 +100,133 @@ public class FrEstacionamiento4 extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_fr_estacionamiento4, container, false);
 
-        mapFragment = (SupportMapFragment) myContext.getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        // Se capturan los controles de cajas de texto
+        buttonNext = view.findViewById(R.id.buttonNext);
+
+        // Se inicializa Firebase
+        inicializarFirebase();
+
+        // Se leen los parámetros
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        is_accion = prefs.getString("ACCION", "");
+        is_nombre = prefs.getString("NAME", "");
+        is_latitud = prefs.getString("LATITUD", "");
+        is_longitud = prefs.getString("LONGITUD", "");
+
+        //Se captura el mapa y se crean sus eventos
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(new OnMapReadyCallback(){
+
+            @Override
+            public void onMapReady(final GoogleMap googleMap) {
+
+                Double ldbl_latitud = Double.parseDouble(is_latitud);
+                Double ldbl_longitud = Double.parseDouble(is_longitud);
+
+                googleMap.getUiSettings().setZoomControlsEnabled(true);
+                googleMap.setTrafficEnabled(true);
+
+                if(is_accion.equals("M"))
+                {
+                    googleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(ldbl_latitud, ldbl_longitud))
+                            .title(is_nombre)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(ldbl_latitud, ldbl_longitud), 15));
+                }
+
+                //Click largo en el mapa
+                googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+                    @Override
+                    public void onMapLongClick(LatLng latLng) {
+
+                        // Creating a marker
+                        MarkerOptions markerOptions = new MarkerOptions();
+
+                        // Setting the position for the marker
+                        markerOptions.position(latLng);
+
+                        // Setting the title for the marker.
+                        // This will be displayed on taping the marker
+                        markerOptions.title(latLng.latitude + " : " + latLng.longitude);
+
+                        // Color
+                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+                        // Clears the previously touched position
+                        googleMap.clear();
+
+                        // Animating to the touched position
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+                        // Placing a marker on the touched position
+                        googleMap.addMarker(markerOptions);
+
+                        //Set Data
+                        is_latitud = latLng.latitude + "";
+                        is_longitud = latLng.longitude + "";
+                    }
+                });
+            }
+        });
+
+        // Boton Grabar
+        buttonNext.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if(grabar(v))
+                {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrEstacionamiento2()).addToBackStack(null).commit();
+                }
+            }
+        });
 
         return view;
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.setTrafficEnabled(true);
-
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(-12.04592, -77.030565))
-                .title("Centro de Lima")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(-12.044956, -77.029831))
-                .title("Palacio de Gobierno"));
-
-        googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(-12.046661, -77.029544))
-                .title("Catedral"));
-
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-12.04592, -77.030565), 15));
-
+    private void inicializarFirebase() {
+        FirebaseApp.initializeApp(getActivity());
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
     }
 
+    public Boolean grabar(View v){
+        if(!validar())
+        {
+            return false;
+        }
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("LATITUD", is_latitud);
+        editor.putString("LONGITUD", is_longitud);
+        editor.commit();
+
+        Toast toast= Toast.makeText(getActivity().getApplicationContext(), "Datos grabados en el SharedPreferences", Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+        toast.show();
+
+        return true;
+    }
+
+    private Boolean validar(){
+        Boolean lb_error = false;
+
+        if(is_latitud.equals("0.0") || is_longitud.equals("0.0"))
+        {
+            Toast toast= Toast.makeText(getActivity().getApplicationContext(),   "Seleccione la ubicación del estacionamiento en el mapa" , Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL, 0, 0);
+            toast.show();
+            lb_error = true;
+        }
+
+        return !lb_error;
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

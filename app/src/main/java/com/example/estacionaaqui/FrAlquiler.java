@@ -53,7 +53,7 @@ public class FrAlquiler extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    EditText editTextName, editTextDist, editTextFecha, editTextPhone;
+    EditText editTextName, editTextDist, editTextFecha, editTextPhone, editTextAddress, editTextPrecio;
     Calendar myCalendar = Calendar.getInstance();
 
     FirebaseDatabase firebaseDatabase;
@@ -61,7 +61,7 @@ public class FrAlquiler extends Fragment {
 
     private FirebaseAuth mAuth ;
 
-    String is_accion, is_idpersonadueno, is_idestacionamiento;
+    String is_accion, is_idpersonadueno, is_idestacionamiento, is_origen;
 
     public FrAlquiler() {
         // Required empty public constructor
@@ -105,6 +105,8 @@ public class FrAlquiler extends Fragment {
         editTextDist = view.findViewById(R.id.editTextDist);
         editTextFecha = view.findViewById(R.id.editTextFecha);
         editTextPhone = view.findViewById(R.id.editTextPhone);
+        editTextAddress = view.findViewById(R.id.editTextAddress);
+        editTextPrecio = view.findViewById(R.id.editTextPrecio);
 
         // Se inicializa Firebase
         inicializarFirebase();
@@ -122,6 +124,7 @@ public class FrAlquiler extends Fragment {
         // Se leen los parámetros
         SharedPreferences prefs = getActivity().getSharedPreferences("ESTACIONAMIENTO", Context.MODE_PRIVATE);
         is_accion = prefs.getString("ACCION", "");
+        is_origen = prefs.getString("ORIGEN", "");
 
         if(is_accion.equals("M"))
         {
@@ -138,7 +141,12 @@ public class FrAlquiler extends Fragment {
                 if(grabar(v))
                 {
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).addToBackStack(null).commit();
+                    if(is_origen.equals("LISTA"))
+                    {
+                        fragmentManager.beginTransaction().replace(R.id.contenedor, new FrCliListaEstacionamientos()).commit();
+                    } else {
+                        fragmentManager.beginTransaction().replace(R.id.contenedor, new MapEstacionamientoActivity()).commit();
+                    }
                 }
             }
         });
@@ -182,6 +190,8 @@ public class FrAlquiler extends Fragment {
                     editTextName.setText(p.getNombre());
                     editTextDist.setText(p.getDistrito());
                     editTextPhone.setText(p.getTelefono());
+                    editTextPrecio.setText(p.getPreciohora().toString());
+                    editTextAddress.setText(p.getDireccion());
 
                     DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
                     String ls_date = df.format(Calendar.getInstance().getTime());
